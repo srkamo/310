@@ -63,7 +63,7 @@ public class Poll {
 			tags.add(newTag); 
 		}
 	}
-	private ArrayList<String> getOptions() {
+	public ArrayList<String> getOptions() {
 		return options; 
 	}
 	
