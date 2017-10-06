@@ -47,7 +47,7 @@ public class Poll {
 		isInfinite = isInfinite1;
 		timeEnd = (Calendar) timeEnd1.clone();
 		image = image1;
-		pollVotes = pollVotes1;
+		pollVotes = new HashMap<String, Integer>(pollVotes1);
 	}
 	
 	public String getTitle() {
