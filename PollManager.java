@@ -18,21 +18,21 @@ public class PollManager {
 		numPolls++;
 	}
 	
-	private ArrayList<Poll> sortByPopularity() {
+	public ArrayList<Poll> sortByPopularity() {
 		ArrayList<Poll> sortedList = null;
 		sortedList.add(polls.get(0));
 		for (int i = 1; i < polls.size(); i++) {
 			Poll unsortedPoll = polls.get(i);
 			int insertPoint = (sortedList.size()/2);
 
-			if (unsortedPoll.getNumVotes() < sortedList.get(insertPoint).getNumVotes()) {
-				while (unsortedPoll.getNumVotes() < sortedList.get(insertPoint).getNumVotes()) {
+			if (unsortedPoll.getNumViews()< sortedList.get(insertPoint).getNumViews()) {
+				while (unsortedPoll.getNumViews() < sortedList.get(insertPoint).getNumViews()) {
 					insertPoint++; 
 				}
 				sortedList.add(insertPoint, unsortedPoll);
 			}
-			else if (unsortedPoll.getNumVotes() > sortedList.get(insertPoint).getNumVotes()){
-				while (unsortedPoll.getNumVotes() > sortedList.get(insertPoint).getNumVotes()) {
+			else if (unsortedPoll.getNumViews() > sortedList.get(insertPoint).getNumViews()){
+				while (unsortedPoll.getNumViews() > sortedList.get(insertPoint).getNumViews()) {
 					insertPoint--; 
 				}
 				sortedList.add(insertPoint, unsortedPoll);
