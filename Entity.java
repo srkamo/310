@@ -21,7 +21,9 @@ public class Entity {
 		title = title1; 
 		id = id1; 
 		description = description1;
-		tags = new ArrayList<String>(tags1); // does this work? -> can Lists be copied like this?
+		for (int i = 0; i< tags.size(); i++) {
+			tags.add(tags.get(i));
+		}
 		isInfinite = isInfinite1; 
 		timeEnd = timeEnd1; // does this work? -> can Calendars be copied like this?
 		image = image1; 
@@ -33,13 +35,17 @@ public class Entity {
 		title = entity.getTitle();
 		id = entity.getID();
 		description = entity.getDescription();
-		tags = entity.getTags(); // does this work? 
+		for (int i = 0; i< entity.getTags().size(); i++) {
+			tags.add(entity.getTags().get(i));
+		}		
 		rating = entity.getRating();
 		image = entity.getImage();
 		numViews = entity.getNumViews();
-		comments = entity.getComments(); //does this work? 
+		for (int i = 0; i< entity.getComments().size(); i++) {
+			comments.add(entity.getComments().get(i));
+		}		
 		isInfinite = entity.isInfinite();
-		timeEnd = entity.getTimeEnd(); // does this work? 
+		timeEnd = (Calendar) entity.getTimeEnd().clone();
 		numVotes = entity.getNumVotes();
 		
 	}
