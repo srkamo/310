@@ -30,7 +30,7 @@ public class Poll {
 		numViews = 0;
 	}
 	
-	public Poll(String title1, int id1, List<String> tags1, List<String> options1, int numViews1, List<CommentAction> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
+	public Poll(	 String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, int numViews1, ArrayList<CommentAction> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
 		title = title1; 
 		id = id1; 
 		for (int i = 0; i< tags1.size(); i++) {
@@ -59,8 +59,8 @@ public class Poll {
 		return tags;
 	}
 	public void addTag(String newTag) {
-		if (!(tags.contains(newTag))) {
-			tags.add(newTag); 
+		if (!(tags.contains(newTag)) ) {
+			tags.add(newTag);
 		}
 	}
 	public ArrayList<String> getOptions() {
