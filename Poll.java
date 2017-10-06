@@ -32,22 +32,22 @@ public class Poll {
 		numViews = 0;
 	}
 	
-	public Poll(Poll poll) { // Copy Constructor
-		title = poll.getTitle(); 
-		id = poll.getID(); 
-		for (int i = 0; i< poll.getTags().size(); i++) {
-			tags.add(poll.getTags().get(i));
+	public Poll(String title1, int id1, List<String> tags1, List<String> options1, int numViews1, int numVotes1, List<commentActions> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
+		title = title1; 
+		id = id1; 
+		for (int i = 0; i< tags1.size(); i++) {
+			tags.add(tags1.get(i));
 		}
-		options = poll.getOptions();
-		numViews = poll.getNumViews(); 
-		numVotes = poll.getNumVotes(); 
-		for (int i = 0; i< poll.getComments().size(); i++) {
-			comments.add(poll.getComments().get(i));
+		options = options1;
+		numViews = numViews1; 
+		numVotes = numVotes1; 
+		for (int i = 0; i< comments1.size(); i++) {
+			comments.add(comments1.get(i));
 		}		
-		isInfinite = poll.isInfinite();
-		timeEnd = (Calendar) poll.getTimeEnd().clone();
-		image = poll.getImage();
-		pollVotes = poll.getPollResults();
+		isInfinite = isInfinite1;
+		timeEnd = (Calendar) timeEnd1.clone();
+		image = image1;
+		pollVotes = pollVotes1;
 	}
 	
 	public String getTitle() {
