@@ -58,9 +58,10 @@ public class Poll {
 	public ArrayList<String> getTags() {
 		return tags;
 	}
-	private void addTag(String newTag) {
-		// if tag doesn't exist 
-		tags.add(newTag);
+	public void addTag(String newTag) {
+		if (!(tags.contains(newTag))) {
+			tags.add(newTag); 
+		}
 	}
 	private ArrayList<String> getOptions() {
 		return options; 
