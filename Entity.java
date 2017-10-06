@@ -30,22 +30,22 @@ public class Entity {
 		numViews = 0; 
 	}
 	
-	public Entity(Entity entity) { // copy constructor 
-		title = entity.getTitle();
-		id = entity.getID();
-		description = entity.getDescription();
-		for (int i = 0; i< entity.getTags().size(); i++) {
-			tags.add(entity.getTags().get(i));
+	public Entity(String title1, int id1, String description1, List<String> tags1, int rating1, String image1, int numViews1, List<commentActions> comments1, Boolean isInfinite1, Calendar timeEnd1, int numVotes1) { 
+		title = title1;
+		id = id1;
+		description = description1;
+		for (int i = 0; i< tags1.size(); i++) {
+			tags.add(tags.get(i));
 		}		
-		rating = entity.getRating();
-		image = entity.getImage();
-		numViews = entity.getNumViews();
-		for (int i = 0; i< entity.getComments().size(); i++) {
-			comments.add(entity.getComments().get(i));
+		rating = rating1;
+		image = image1;
+		numViews = numViews1;
+		for (int i = 0; i< comments.size(); i++) {
+			comments.add(comments.get(i));
 		}		
-		isInfinite = entity.isInfinite();
-		timeEnd = (Calendar) entity.getTimeEnd().clone();
-		numVotes = entity.getNumVotes();
+		isInfinite = isInfinite1;
+		timeEnd = (Calendar) timeEnd.clone();
+		numVotes = numVotes1;
 		
 	}
 	
