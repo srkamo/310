@@ -21,10 +21,12 @@ public class Poll {
 	public Poll(String title1, int id1, List<String> tags1, List<String> options1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
 		title = title1; 
 		id = id1; 
-		tags = tags1; // does this work? -> can Lists be copied like this?
-		options = options1; // does this work? -> can Lists be copied like this?
+		for (int i = 0; i< tags.size(); i++) {
+			tags.add(tags.get(i));
+		}		
+		options = options1; 
 		isInfinite = isInfinite1; 
-		timeEnd = timeEnd1; // does this work? -> can Calendars be copied like this?
+		timeEnd = (Calendar) timeEnd1.clone();
 		image = image1; 
 		numVotes = 0; 
 		numViews = 0;
@@ -33,13 +35,17 @@ public class Poll {
 	public Poll(Poll poll) { // Copy Constructor
 		title = poll.getTitle(); 
 		id = poll.getID(); 
-		tags = poll.getTags(); // does this work? 
+		for (int i = 0; i< poll.getTags().size(); i++) {
+			tags.add(poll.getTags().get(i));
+		}
 		options = poll.getOptions();
 		numViews = poll.getNumViews(); 
 		numVotes = poll.getNumVotes(); 
-		comments = poll.getComments(); //does this work?
+		for (int i = 0; i< poll.getComments().size(); i++) {
+			comments.add(poll.getComments().get(i));
+		}		
 		isInfinite = poll.isInfinite();
-		timeEnd = poll.getTimeEnd(); // does this work?
+		timeEnd = (Calendar) poll.getTimeEnd().clone();
 		image = poll.getImage();
 		pollVotes = poll.getPollResults();
 	}
