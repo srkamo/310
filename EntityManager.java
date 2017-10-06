@@ -1,10 +1,10 @@
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class EntityManager {
 
-	private List<Entity> entities; //list of current entities being displayed
+	private ArrayList<Entity> entities; //list of current entities being displayed
 	private int numEntities; 
 	
 	
@@ -25,8 +25,8 @@ public class EntityManager {
 		
 	}
 	
-	private List<Entity> sortByPopularity() {
-		List<Entity> sortedList = null;
+	private ArrayList<Entity> sortByPopularity() {
+		ArrayList<Entity> sortedList = null;
 		sortedList.add(entities.get(0));
 		for (int i = 1; i < entities.size(); i++) {
 			Entity unsortedEntity = entities.get(i);
@@ -78,8 +78,8 @@ public class EntityManager {
 		
 	}
 	
-	public List<Entity> searchEntities(String search) {
-		List<Entity> searchResults = null; 
+	public ArrayList<Entity> searchEntities(String search) {
+		ArrayList<Entity> searchResults = null; 
 		for (int i = 0; i < entities.size(); i++) {
 			String entityTitle = entities.get(i).getTitle();
 			String entityDescrip = entities.get(i).getDescription();
