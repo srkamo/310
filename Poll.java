@@ -10,7 +10,6 @@ public class Poll {
 	private ArrayList<String> tags;
 	private ArrayList<String> options; 
 	private int numViews;
-	private int numVotes; 
 	private ArrayList<CommentAction> comments; 
 	private Boolean isInfinite; 
 	private Calendar timeEnd; 
@@ -28,11 +27,10 @@ public class Poll {
 		isInfinite = isInfinite1; 
 		timeEnd = (Calendar) timeEnd1.clone();
 		image = image1; 
-		numVotes = 0; 
 		numViews = 0;
 	}
 	
-	public Poll(String title1, int id1, List<String> tags1, List<String> options1, int numViews1, int numVotes1, List<commentActions> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
+	public Poll(String title1, int id1, List<String> tags1, List<String> options1, int numViews1, List<commentActions> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
 		title = title1; 
 		id = id1; 
 		for (int i = 0; i< tags1.size(); i++) {
@@ -40,7 +38,6 @@ public class Poll {
 		}
 		options = options1;
 		numViews = numViews1; 
-		numVotes = numVotes1; 
 		for (int i = 0; i< comments1.size(); i++) {
 			comments.add(comments1.get(i));
 		}		
@@ -114,8 +111,5 @@ public class Poll {
 	}
 	public void addComment(CommentAction comment) { // this is new 
 		comments.add(comment);
-	}
-	public int getNumVotes() { // this is new 
-		return numVotes; 
 	}
 }
