@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.security.cert.Certificate;
 import java.sql.Connection;
@@ -22,6 +23,7 @@ import java.util.Vector;
 
 
 
+
 public class Database {
 	//to connect to database
 	private Connection conn = null;
@@ -32,40 +34,41 @@ public class Database {
 	//constructor
 	public Database (){
 		//config information
-		String ipaddress = "";
-		String dbName = "";
-		String user = "";
-		String password = "";
+		String ipaddress = "127.0.0.1";
+		String dbName = "knowItAll";
+		String user = "root";
+		String password = "root";
 		
 		//parse the sql source file
 		try{
-			String configFile = "rsrc/config.txt";
-			String line = null;
-			
-			FileReader fileReader = new FileReader(configFile);
-			BufferedReader br = new BufferedReader(fileReader);
-			
-			//read info from config file
-			while((line = br.readLine()) != null){
-				String [] strSplit;
-				strSplit = line.split(":");
-				String id = strSplit[0];
-				
-				switch(id){
-					case "ipaddress":
-						ipaddress = strSplit[1].trim();
-						break;
-					case "db":
-						dbName = strSplit[1].trim();
-						break;
-					case "user":
-						user = strSplit[1].trim();
-						break;
-					case "password":
-						password = strSplit[1].trim();
-						break;
-				}//switch
-			}//while
+//			String configFile = "config.txt";
+//			///KnowItAll/src/config.txt
+//			String line = null;
+//			
+//			FileReader fileReader = new FileReader(configFile);
+//			BufferedReader br = new BufferedReader(fileReader);
+//			
+//			//read info from config file
+//			while((line = br.readLine()) != null){
+//				String [] strSplit;
+//				strSplit = line.split(":");
+//				String id = strSplit[0];
+//				
+//				switch(id){
+//					case "ipaddress":
+//						ipaddress = strSplit[1].trim();
+//						break;
+//					case "db":
+//						dbName = strSplit[1].trim();
+//						break;
+//					case "user":
+//						user = strSplit[1].trim();
+//						break;
+//					case "password":
+//						password = strSplit[1].trim();
+//						break;
+//				}//switch
+//			}//while
 
 			//connect to the sql database
 			Class.forName("com.mysql.jdbc.Driver");
@@ -73,11 +76,11 @@ public class Database {
 					"&password=" + password + "&useSSL=false");
 			st = conn.createStatement();
 			
-			br.close();
-		} catch(FileNotFoundException fnfe){
-			System.out.println("fnfe in Database: " + fnfe.getMessage());
-		} catch (IOException ioe){
-			System.out.println("ioein Database: " + ioe.getMessage());
+//			br.close();
+//		} catch(FileNotFoundException fnfe){
+//			System.out.println("fnfe in Database: " + fnfe.getMessage());
+//		} catch (IOException ioe){
+//			System.out.println("ioein Database: " + ioe.getMessage());
 		} catch (ClassNotFoundException cnfe){
 			System.out.println("cnfe in Database: " + cnfe.getMessage());
 		} catch(SQLException sqle){
@@ -206,13 +209,16 @@ public class Database {
 		int rating = newEntity.getRating();
 		String image = newEntity.getImage();
 		int numViews = newEntity.getNumViews();
-		Boolean isInfinite = newEntity.isInfinite();
+		Boolean infinite = newEntity.isInfinite();
+		int isInfinite = 0;
+		if(infinite){ isInfinite = 1; }
+		
 		Calendar timeEndCal = newEntity.getTimeEnd();
 		Timestamp timeEnd = calendarToTimestamp(timeEndCal);
 		
 		try{
-			ps = conn.prepareStatement("INSERT INTO Entities(id, title, description, rating, image, numViews, isInfinite, timeEnd)"
-					+ "VALUES('" + title + "', '" + description + "', '" + rating + "', '" + image + "', '" 
+			ps = conn.prepareStatement("INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)"
+					+ "VALUES('" + id + "', '" + title + "', '" + description + "', '" + rating + "', '" + image + "', '" 
 					+ numViews + "', '" + isInfinite + "', '" + timeEnd + "')");
 			ps.execute();
 		} catch(SQLException sqle){
@@ -221,18 +227,30 @@ public class Database {
 		
 		//add the entity's tags to the tag table
 		ArrayList<String> tags = newEntity.getTags();
-		addTags(id, tags);
+		addTags(id, tags, "Entity");
 		
 	}//addEntity()
 	
 	
 	//add tags from an entity or poll to Tags table
-	private void addTags(int id, ArrayList<String> tags){
+	private void addTags(int id, ArrayList<String> tags, String type){
+		String tagTable = "";
+		String idType = "";
+		
+		if(type.equals("Entity")){
+			tagTable = "EntityTags";
+			idType = "entityID";
+		}
+		else{
+			tagTable = "PollTags";
+			idType = "pollID";
+		}
+		
 		for(int i = 0; i < tags.size(); i++){
 			String currTag = tags.get(i);
 			
 			try{
-				ps = conn.prepareStatement("INSERT INTO Tags(subjectID, title) "
+				ps = conn.prepareStatement("INSERT INTO " + tagTable + "(" + idType + ", title) "
 						+ "VALUES('" + id + "', '" + currTag + "')");
 				ps.execute();
 			} catch(SQLException sqle){
@@ -272,12 +290,12 @@ public class Database {
 			
 			while(rs.next()){
 				String title = rs.getString("title");		//entity title
-				int entityID = rs.getInt(entityID);			//entity ID
-				String description = rs.getString("descripton");	//entity description
+				int entityID = rs.getInt("entityID");			//entity ID
+				String description = rs.getString("description");	//entity description
 				ArrayList<String> tags = getTags(entityID);	//entity tags
-				int rating = rs.getInt(rating);				
-				String image = rs.getString(image);			//image url
-				int numViews = rs.getInt(numViews);
+				int rating = rs.getInt("rating");				
+				String image = rs.getString("image");			//image url
+				int numViews = rs.getInt("numViews");
 				ArrayList<CommentAction> comments = getComments(entityID);	//a list of commentActions associated with the enitity
 				Boolean isInfinite = rs.getBoolean("isInfinite");
 				Timestamp endTimestamp = rs.getTimestamp("timeEnd");
@@ -311,8 +329,8 @@ public class Database {
 		
 		try{
 			p = conn.prepareStatement("SELECT title "
-					+ "FROM Entities"
-					+ "WHERE subjectID = '" + id + "';");
+					+ "FROM EntityTags "
+					+ "WHERE entityID = '" + id + "';");
 			r = p.executeQuery();
 			
 			while(r.next()){
@@ -341,8 +359,8 @@ public class Database {
 		
 		try{
 			p = conn.prepareStatement("SELECT a.isAnon, u.email, a.actionValue "
-					+ "FROM Activities a, Users u"
-					+ "WHERE subjectID = '" + id + " "
+					+ "FROM Activities a, Users u "
+					+ "WHERE subjectID = '" + id + "' "
 					+ "AND u.userID = a.userID "
 					+ "AND a.type = 'Comment';");
 			r = p.executeQuery();
@@ -372,12 +390,15 @@ public class Database {
 		int id = newPoll.getID();
 		int numViews = newPoll.getNumViews();
 		String image = newPoll.getImage();
-		Boolean isInfinite = newPoll.isInfinite();
+		Boolean infinite = newPoll.isInfinite();
+		int isInfinite = 0;
+		if(infinite){ isInfinite = 1; }
+		
 		Calendar timeEndCal = newPoll.getTimeEnd();
 		Timestamp timeEnd = calendarToTimestamp(timeEndCal);
 		
 		try{
-			ps = conn.prepareStatement("INSERT INTO Polls(id, title, image, numViews, isInfinite, timeEnd )"
+			ps = conn.prepareStatement("INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd )"
 					+ "VALUES('" + id + "', '" + title + "', '" + image + "', '" + numViews + "', '" 
 					+ isInfinite + "', '" + timeEnd + "')");
 			ps.execute();
@@ -387,7 +408,7 @@ public class Database {
 		
 		//add the poll's tags to the Tag Table
 		ArrayList<String> tags = newPoll.getTags();
-		addTags(id, tags);
+		addTags(id, tags, "Poll");
 		
 		//add the poll's options to the options table
 		ArrayList<String> options = newPoll.getOptions();
@@ -427,11 +448,11 @@ public class Database {
 			while(rs.next()){
 				String title = rs.getString("title");		//poll title
 				int pollID = rs.getInt("pollID");			//poll ID
-				String image = rs.getString(image);			//image url
+				String image = rs.getString("image");			//image url
 				ArrayList<String> tags = getTags(pollID);	//poll tags
 				ArrayList<String> options = getOptions(pollID);	//poll options	
 				HashMap<String, Integer> numVotes = getPollVotes(pollID);
-				int numViews = rs.getInt(numViews);
+				int numViews = rs.getInt("numViews");
 				ArrayList<CommentAction> comments = getComments(pollID);	//a list of commentActions associated with the enitity
 				Boolean isInfinite = rs.getBoolean("isInfinite");
 				Timestamp endTimestamp = rs.getTimestamp("timeEnd");
@@ -439,8 +460,8 @@ public class Database {
 				
 				
 				//create the poll and add it to the list of polls
-				Poll poll = new Poll(title, pollID, image, tags, options, numVotes, numViews, 
-						comments, isInfinite, timeEnd);
+				Poll poll = new Poll(title, pollID, tags, options, numViews, comments, isInfinite, 
+						timeEnd, image, numVotes);
 				polls.add(poll);
 			}
 		} catch(SQLException sqle){
@@ -555,5 +576,117 @@ public class Database {
 		
 	}//addNumView()
 	
+	
+	//returns a list of Polls which relate to the keyword passed
+	public ArrayList<Poll> searchForPolls(String keyword){
+		//start with all the polls in the database
+		ArrayList<Poll> allPolls = getPolls();
+		ArrayList<Poll> returnPolls = new ArrayList<Poll>();
+		
+		//go through the list of polls and add the ones that pertain to the keyword
+		for(int i = 0; i < allPolls.size(); i++){
+			Poll currPoll = allPolls.get(i);
+			String title = currPoll.getTitle();
+			ArrayList<String> tags = currPoll.getTags();
+			Boolean match = false;
+			
+			//check if title contains keywords
+			if(title.contains(keyword)){
+				match = true;
+			}
+			//if title does not contain keyword, check tags
+			if(!match){
+				for(int j = 0; j < tags.size(); j++){
+					if(tags.get(j).contains(keyword)){
+						match = true;
+						break;
+					}//if
+				}//for j
+			}//if
+			
+			//if not match, delete from polls list
+			if(!match){
+				returnPolls.add(currPoll);
+			}
+			
+		}//for i
+		
+		return returnPolls;
+	}//searchForPolls()
+	
+	
+	//returns a list of Entities which relate to the keyword passed
+	public ArrayList<Entity> searchForEntities(String keyword){
+		//start with all the entities in the database
+		ArrayList<Entity> allEntities = getEntities();
+		ArrayList<Entity> returnEntities = new ArrayList<Entity>();
+		
+		//go through the list of polls and delete the ones that do not pertain to the keyword
+		for(int i = 0; i < allEntities.size(); i++){
+			Entity currEntity = allEntities.get(i);
+			String title = currEntity.getTitle();
+			String description = currEntity.getDescription();
+			ArrayList<String> tags = currEntity.getTags();
+			Boolean match = false;
+			
+			//check if title or description contains keywords
+			if(title.contains(keyword) || description.contains(keyword)){
+				match = true;
+			}
+			//if title or description does not contain keyword, check tags
+			if(!match){
+				for(int j = 0; j < tags.size(); j++){
+					if(tags.get(j).contains(keyword)){
+						match = true;
+						break;
+					}//if
+				}//for j
+			}//if
+			
+			//if not match, delete from polls list
+			if(!match){
+				returnEntities.add(currEntity);
+			}
+			
+		}//for i
+		
+		return returnEntities;
+	}//searchForEntities()
+	
+	
+	public static void main(String [] args){
+		Database db = new Database();
+		
+		//test addUser
+//		User newUser = new User("mbent@usc.edu", "password", "Morgan", "Bent");
+//		db.addUser(newUser);
+		
+		//test getUser
+//		User user = db.getUser("mbent@usc.edu");
+//		System.out.println("Email: " + user.getEmail());
+//		System.out.println("fName: " + user.getFName());
+//		System.out.println("lName: " + user.getLName());
+		
+		//test addEntity
+//		ArrayList<String> tags = new ArrayList<String>();
+//		tags.add("yum");
+//		Calendar calendar = Calendar.getInstance();
+//		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "anImageURL");
+//		db.addEntity(newEntity);
+		
+		//test addPoll
+//		ArrayList<String> tags = new ArrayList<String>();
+//		tags.add("tag1");
+//		ArrayList<String> options = new ArrayList<String>();
+//		options.add("option1");
+//		options.add("option2");
+//		Calendar calendar = Calendar.getInstance();
+//		Poll newPoll = new Poll("my poll", 1, tags, options, true, calendar, "someURL");
+//		db.addPoll(newPoll);
+		
+		ArrayList<Entity> allEntities = db.getEntities();
+		System.out.println(allEntities.size());
+
+	}//main
 	
 }
