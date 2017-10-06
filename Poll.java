@@ -1,5 +1,5 @@
 import java.util.Calendar;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Poll {
@@ -7,18 +7,18 @@ public class Poll {
 	
 	private String title; 
 	private int id; 
-	private List<String> tags;
-	private List<String> options; 
+	private ArrayList<String> tags;
+	private ArrayList<String> options; 
 	private int numViews;
 	private int numVotes; 
-	private List<commentActions> comments; 
+	private ArrayList<CommentAction> comments; 
 	private Boolean isInfinite; 
 	private Calendar timeEnd; 
 	private String image; //this is new 
 	private HashMap<String, Integer> pollVotes;
 	
 	
-	public Poll(String title1, int id1, List<String> tags1, List<String> options1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
+	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
 		title = title1; 
 		id = id1; 
 		for (int i = 0; i< tags.size(); i++) {
@@ -58,21 +58,21 @@ public class Poll {
 		return id;
 	}
 	
-	public List<String> getTags() {
+	public ArrayList<String> getTags() {
 		return tags;
 	}
 	private void addTag(String newTag) {
 		// if tag doesn't exist 
 		tags.add(newTag);
 	}
-	private List<String> getOptions() {
+	private ArrayList<String> getOptions() {
 		return options; 
 	}
 	
 	public int getNumViews() {
 		return numViews; 
 	}
-	public List<commentActions> getComments() {
+	public ArrayList<CommentAction> getComments() {
 		return comments; 
 	}
 	public Boolean pollClosed() {
