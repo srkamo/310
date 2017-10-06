@@ -13,10 +13,6 @@ package knowitall;
 	          
 	          String hashedPassword = new BigInteger(1,m.digest()).toString(16);
 	          
-	          System.out.println("Password: "+password); 
-	          
-	          System.out.println("Hashed password: "+hashedPassword); 
-	          
 	          return hashedPassword;
 	        }
 	        
@@ -25,17 +21,10 @@ package knowitall;
 	        	
 	        	String check=hashPassword(attempt);
 	        	
-	        	System.out.println(check);
-	        	System.out.println(password);
-	        	
 	        	if (check.equals(password))
-	        	{
-	        		System.out.println("true");
-	        		return true;
-	        	}
+	        	return true;
 	        	
 	        	else	
-	        	System.out.println("false");
 	        	return false;
 	        	
 	    	}
