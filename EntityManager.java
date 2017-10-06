@@ -25,21 +25,21 @@ public class EntityManager {
 		
 	}
 	
-	private ArrayList<Entity> sortByPopularity() {
+	public ArrayList<Entity> sortByPopularity() {
 		ArrayList<Entity> sortedList = null;
 		sortedList.add(entities.get(0));
 		for (int i = 1; i < entities.size(); i++) {
 			Entity unsortedEntity = entities.get(i);
 			int insertPoint = (sortedList.size()/2);
 
-			if (unsortedEntity.getNumVotes() < sortedList.get(insertPoint).getNumVotes()) {
-				while (unsortedEntity.getNumVotes() < sortedList.get(insertPoint).getNumVotes()) {
+			if (unsortedEntity.getNumViews() < sortedList.get(insertPoint).getNumViews()) {
+				while (unsortedEntity.getNumViews() < sortedList.get(insertPoint).getNumViews()) {
 					insertPoint++; 
 				}
 				sortedList.add(insertPoint, unsortedEntity);
 			}
-			else if (unsortedEntity.getNumVotes() > sortedList.get(insertPoint).getNumVotes()){
-				while (unsortedEntity.getNumVotes() > sortedList.get(insertPoint).getNumVotes()) {
+			else if (unsortedEntity.getNumViews() > sortedList.get(insertPoint).getNumViews()){
+				while (unsortedEntity.getNumViews() > sortedList.get(insertPoint).getNumViews()) {
 					insertPoint--; 
 				}
 				sortedList.add(insertPoint, unsortedEntity);
