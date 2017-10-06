@@ -68,7 +68,9 @@ public class Entity {
 	
 	// Add new Tag to Entity 
 	public void addTag(String newTag) {
-		tags.add(newTag); 
+		if (!(tags.contains(newTag))) {
+			tags.add(newTag); 
+		}
 	}
 	
 	//New UpVote for Entity
