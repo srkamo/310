@@ -28,7 +28,7 @@ public class Entity {
 		numViews = 0; 
 	}
 	
-	public Entity(String title1, int id1, String description1, List<String> tags1, int rating1, String image1, int numViews1, List<commentActions> comments1, Boolean isInfinite1, Calendar timeEnd1) { 
+	public Entity(String title1, int id1, String description1, ArrayList<String> tags1, int rating1, String image1, int numViews1, ArrayList<CommentAction> comments1, Boolean isInfinite1, Calendar timeEnd1) { 
 		title = title1;
 		id = id1;
 		description = description1;
@@ -57,7 +57,6 @@ public class Entity {
 	
 	//Get  Entity Description 
 	public String getDescription() {
-	
 		return description; 
 	}
 	
