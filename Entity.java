@@ -1,23 +1,22 @@
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class Entity {
 	
 	private String title; 
 	private int id; 
 	private String description; 
-	private List<String> tags;
+	private ArrayList<String> tags;
 	private int rating; 
 	private String image; 
 	private int numViews; 
-	private List<commentActions> comments; 
+	private ArrayList<CommentAction> comments; 
 	private Boolean isInfinite; 
 	private Calendar timeEnd; 
 	private int numVotes; // this is new 
 	
 	// Entity Constructor
-	public Entity(String title1, int id1, String description1, List<String> tags1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
+	public Entity(String title1, int id1, String description1, ArrayList<String> tags1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
 		title = title1; 
 		id = id1; 
 		description = description1;
@@ -67,7 +66,7 @@ public class Entity {
 	}
 	
 	// Get Entity (Search) Tags 
-	public List<String> getTags() {
+	public ArrayList<String> getTags() {
 		return tags;
 	}
 	
@@ -109,7 +108,7 @@ public class Entity {
 	}
 	
 	//Get Comments for Entity
-	public List<commentActions> getComments() {
+	public ArrayList<CommentAction> getComments() {
 		return comments;
 	}
 	
