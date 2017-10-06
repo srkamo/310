@@ -13,7 +13,6 @@ public class Entity {
 	private ArrayList<CommentAction> comments; 
 	private Boolean isInfinite; 
 	private Calendar timeEnd; 
-	private int numVotes; // this is new 
 	
 	// Entity Constructor
 	public Entity(String title1, int id1, String description1, ArrayList<String> tags1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
@@ -26,11 +25,10 @@ public class Entity {
 		isInfinite = isInfinite1; 
 		timeEnd = timeEnd1; // does this work? -> can Calendars be copied like this?
 		image = image1; 
-		numVotes = 0; 
 		numViews = 0; 
 	}
 	
-	public Entity(String title1, int id1, String description1, List<String> tags1, int rating1, String image1, int numViews1, List<commentActions> comments1, Boolean isInfinite1, Calendar timeEnd1, int numVotes1) { 
+	public Entity(String title1, int id1, String description1, List<String> tags1, int rating1, String image1, int numViews1, List<commentActions> comments1, Boolean isInfinite1, Calendar timeEnd1) { 
 		title = title1;
 		id = id1;
 		description = description1;
@@ -44,9 +42,7 @@ public class Entity {
 			comments.add(comments.get(i));
 		}		
 		isInfinite = isInfinite1;
-		timeEnd = (Calendar) timeEnd.clone();
-		numVotes = numVotes1;
-		
+		timeEnd = (Calendar) timeEnd.clone();		
 	}
 	
 	// Get Entity Title 
@@ -78,13 +74,11 @@ public class Entity {
 	//New UpVote for Entity
 	public void upVote() {
 		rating++;
-		numVotes++;
 	}
 	
 	//New DownVote for Entity
 	public void downVote() {
 		rating--;
-		numVotes++;
 	}
 	
 	//Get Entity Rating 
@@ -134,8 +128,5 @@ public class Entity {
 	}
 	public void addComment(CommentAction comment) { // this is new 
 		comments.add(comment);
-	}
-	public int getNumVotes() { // this is new
-		return numVotes; 
 	}
 }
