@@ -54,7 +54,7 @@ public class PollManager {
 		}
 	}
 	
-	public void newComment(int entityID, String userEmail, String newComment) { // added userEmail as a parameter
+	public void newComment(int pollID, String userEmail, String newComment) { // added userEmail as a parameter
 		Boolean isAnon = false;
 		CommentAction comment = new CommentAction(isAnon, userEmail, pollID, newComment);
 		for (int i = 0; i < polls.size(); i++) {
