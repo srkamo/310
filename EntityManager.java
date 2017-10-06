@@ -65,17 +65,15 @@ public class EntityManager {
 		}
 	}
 	
-	public void newComment(int entityID, String newComment) {
+	public void newComment(int entityID, String userEmail, String newComment) { // added userEmail as a parameter
+		Boolean isAnon = false;
+		CommentAction comment = new CommentAction(isAnon, userEmail, entityID, newComment);
 		for (int i = 0; i < entities.size(); i++) {
 			Entity entity = entities.get(i);
-			// turn string parameter into commentAction
-			// commentActions comment = newComment; 
-	
 			if (entity.getID() == entityID) {
-				
+				entity.addComment(comment);
 			}
-		}
-		
+		}	
 	}
 	
 	public ArrayList<Entity> searchEntities(String search) {
