@@ -1,10 +1,10 @@
-import java.util.List;
+import java.util.ArrayList;
 
 
 
 public class PollManager {
 
-	private List<Poll> polls; // list of current polls being displayed
+	private ArrayList<Poll> polls; // list of current polls being displayed
 	private int numPolls; 
 	
 	
@@ -18,8 +18,8 @@ public class PollManager {
 		numPolls++;
 	}
 	
-	private List<Poll> sortByPopularity() {
-		List<Poll> sortedList = null;
+	private ArrayList<Poll> sortByPopularity() {
+		ArrayList<Poll> sortedList = null;
 		sortedList.add(polls.get(0));
 		for (int i = 1; i < polls.size(); i++) {
 			Poll unsortedPoll = polls.get(i);
@@ -66,8 +66,8 @@ public class PollManager {
 		}
 	}
 	
-	public List<Poll> searchPolls(String search) {
-		List<Poll> searchResults = null; 
+	public ArrayList<Poll> searchPolls(String search) {
+		ArrayList<Poll> searchResults = null; 
 		for (int i = 0; i < polls.size(); i++) {
 			String pollTitle = polls.get(i).getTitle();
 			if (pollTitle.contains(search)) {
