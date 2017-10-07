@@ -26,7 +26,7 @@ public class EntityManager {
 	}
 	
 	public ArrayList<Entity> sortByPopularity() {
-		ArrayList<Entity> sortedList = null;
+		ArrayList<Entity> sortedList = new ArrayList<Entity>();
 		sortedList.add(entities.get(0));
 		for (int i = 1; i < entities.size(); i++) {
 			Entity unsortedEntity = entities.get(i);
@@ -77,7 +77,7 @@ public class EntityManager {
 	}
 	
 	public ArrayList<Entity> searchEntities(String search) {
-		ArrayList<Entity> searchResults = null; 
+		ArrayList<Entity> searchResults = new ArrayList<Entity>(); 
 		for (int i = 0; i < entities.size(); i++) {
 			String entityTitle = entities.get(i).getTitle();
 			String entityDescrip = entities.get(i).getDescription();
