@@ -20,9 +20,7 @@ public class Poll {
 	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
 		title = title1; 
 		id = id1; 
-		for (int i = 0; i< tags.size(); i++) {
-			tags.add(tags.get(i));
-		}		
+		tags = tags1; 		
 		options = options1; 
 		isInfinite = isInfinite1; 
 		timeEnd = (Calendar) timeEnd1.clone();
@@ -33,14 +31,10 @@ public class Poll {
 	public Poll(	 String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, int numViews1, ArrayList<CommentAction> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
 		title = title1; 
 		id = id1; 
-		for (int i = 0; i< tags1.size(); i++) {
-			tags.add(tags1.get(i));
-		}
+		tags = tags1; 
 		options = options1;
 		numViews = numViews1; 
-		for (int i = 0; i< comments1.size(); i++) {
-			comments.add(comments1.get(i));
-		}		
+		comments = comments1; 		
 		isInfinite = isInfinite1;
 		timeEnd = (Calendar) timeEnd1.clone();
 		image = image1;
