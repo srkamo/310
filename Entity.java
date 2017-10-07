@@ -19,9 +19,7 @@ public class Entity {
 		title = title1; 
 		id = id1; 
 		description = description1;
-		for (int i = 0; i< tags.size(); i++) {
-			tags.add(tags.get(i));
-		}
+		tags = tags1; 
 		isInfinite = isInfinite1; 
 		timeEnd = timeEnd1; // does this work? -> can Calendars be copied like this?
 		image = image1; 
@@ -32,15 +30,11 @@ public class Entity {
 		title = title1;
 		id = id1;
 		description = description1;
-		for (int i = 0; i< tags1.size(); i++) {
-			tags.add(tags.get(i));
-		}		
+		tags = tags1; 		
 		rating = rating1;
 		image = image1;
 		numViews = numViews1;
-		for (int i = 0; i< comments.size(); i++) {
-			comments.add(comments.get(i));
-		}		
+		comments= comments1; 	
 		isInfinite = isInfinite1;
 		timeEnd = (Calendar) timeEnd.clone();		
 	}
