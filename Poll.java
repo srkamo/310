@@ -17,13 +17,15 @@ public class Poll {
 	private HashMap<String, Integer> pollVotes;
 	
 	
-	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
+	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, 
+				Boolean isInfinite1, Calendar timeEnd1, String image1, int year, int month, int date) {
 		title = title1; 
 		id = id1; 
 		tags = tags1; 		
 		options = options1; 
 		isInfinite = isInfinite1; 
-		timeEnd = (Calendar) timeEnd1.clone();
+		//timeEnd = (Calendar) timeEnd1.clone();
+		timeEnd.set(year, month, date);
 		image = image1; 
 		numViews = 0;
 	}
@@ -101,7 +103,7 @@ public class Poll {
 	public Boolean isInfinite() {//this is new 
 		return isInfinite;
 	}
-	public Calendar getTimeEnd() { //this is new 
+	public Calendar getTimeEnd() { //this is new -> Should it return calendar object or stored Calendar values? (i.e. year, month, date, etc.) 
 		return timeEnd;
 	}
 	public void addComment(CommentAction comment) { // this is new 
