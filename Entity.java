@@ -15,13 +15,15 @@ public class Entity {
 	private Calendar timeEnd; 
 	
 	// Entity Constructor
-	public Entity(String title1, int id1, String description1, ArrayList<String> tags1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
+	public Entity(String title1, int id1, String description1, ArrayList<String> tags1, 
+				Boolean isInfinite1, Calendar timeEnd1, String image1, int year, int month, int date) {
 		title = title1; 
 		id = id1; 
 		description = description1;
 		tags = tags1; 
 		isInfinite = isInfinite1; 
-		timeEnd = timeEnd1; // does this work? -> can Calendars be copied like this?
+		//timeEnd = (Calendar) timeEnd1.clone();
+		timeEnd.set(year, month, date);
 		image = image1; 
 		numViews = 0; 
 	}
@@ -34,7 +36,7 @@ public class Entity {
 		rating = rating1;
 		image = image1;
 		numViews = numViews1;
-		comments= comments1; 	
+		comments = comments1; 	
 		isInfinite = isInfinite1;
 		timeEnd = (Calendar) timeEnd.clone();		
 	}
@@ -118,7 +120,7 @@ public class Entity {
 	public Boolean isInfinite() { // this is new 
 		return isInfinite;
 	}	
-	public Calendar getTimeEnd() { // this is new 
+	public Calendar getTimeEnd() { // this is new -> Should it return calendar object or stored Calendar values? (i.e. year, month, date, etc.) 
 		return timeEnd;
 	}
 	public void addComment(CommentAction comment) { // this is new 
