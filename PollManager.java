@@ -19,7 +19,7 @@ public class PollManager {
 	}
 	
 	public ArrayList<Poll> sortByPopularity() {
-		ArrayList<Poll> sortedList = null;
+		ArrayList<Poll> sortedList = new ArrayList<Poll>();
 		sortedList.add(polls.get(0));
 		for (int i = 1; i < polls.size(); i++) {
 			Poll unsortedPoll = polls.get(i);
@@ -66,7 +66,7 @@ public class PollManager {
 	}
 	
 	public ArrayList<Poll> searchPolls(String search) {
-		ArrayList<Poll> searchResults = null; 
+		ArrayList<Poll> searchResults = new ArrayList<Poll>(); 
 		for (int i = 0; i < polls.size(); i++) {
 			String pollTitle = polls.get(i).getTitle();
 			if (pollTitle.contains(search)) {
