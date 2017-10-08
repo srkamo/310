@@ -486,7 +486,7 @@ public class Database {
 		
 		try{
 			p = conn.prepareStatement("SELECT title "
-					+ "FROM Options"
+					+ "FROM Options "
 					+ "WHERE pollID = '" + id + "';");
 			r = p.executeQuery();
 			
@@ -516,7 +516,7 @@ public class Database {
 		
 		try{
 			p = conn.prepareStatement("SELECT title, numVotes "
-					+ "FROM Options"
+					+ "FROM Options "
 					+ "WHERE pollID = '" + id + "';");
 			r = p.executeQuery();
 			
@@ -604,8 +604,8 @@ public class Database {
 				}//for j
 			}//if
 			
-			//if not match, delete from polls list
-			if(!match){
+			//if match, add to list of 
+			if(match){
 				returnPolls.add(currPoll);
 			}
 			
@@ -684,8 +684,9 @@ public class Database {
 //		Poll newPoll = new Poll("my poll", 1, tags, options, true, calendar, "someURL");
 //		db.addPoll(newPoll);
 		
-		ArrayList<Entity> allEntities = db.getEntities();
-		System.out.println(allEntities.size());
+		//ArrayList<Poll> allPolls = db.getPolls();
+		ArrayList<Poll> search = db.searchForPolls("my");
+		System.out.println(search.size());
 
 	}//main
 	
