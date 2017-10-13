@@ -26,7 +26,7 @@ CREATE TABLE Activities(
 CREATE TABLE Polls(
 	pollID INT(11) PRIMARY KEY NOT NULL,
     title VARCHAR(50) NOT NULL,
-    image VARCHAR(50) NOT NULL,
+    image VARCHAR(200) NOT NULL,
     numViews INT(11) NOT NULL,
     isInfinite bool NOT NULL,
     timeEnd timestamp NOT NULL
@@ -45,7 +45,7 @@ CREATE TABLE Entities(
     title VARCHAR(50) NOT NULL,
     description VARCHAR(50) NOT NULL,
     rating INT(11) NOT NULL,
-    image VARCHAR(50) NOT NULL,
+    image VARCHAR(200) NOT NULL,
     numViews INT(11) NOT NULL,
     isInfinite bool NOT NULL,
     timeEnd timestamp NOT NULL
