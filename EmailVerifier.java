@@ -28,12 +28,11 @@ public class EmailVerifier {
 	
 	static public Boolean validate(String email) {
 		
-		System.out.println("FUUUUUCKK!!");
-		 
+		if(!email.contains("@usc.edu"))
+			return false;
 		
-		
-			String request = urlReq + email + addSMTP + addFORMAT;
-			System.out.println("request: " + request);
+		String request = urlReq + email + addSMTP + addFORMAT;
+		System.out.println("request: " + request);
 			try {
 				
 				url = new URL(request);
@@ -73,7 +72,7 @@ public class EmailVerifier {
 	}
 	
 	
-	static public String readAll(Reader rdr) throws IOException{
+	static private String readAll(Reader rdr) throws IOException{
 		StringBuilder sb = new StringBuilder();
 		
 		int cp ;
