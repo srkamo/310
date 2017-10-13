@@ -578,80 +578,88 @@ public class Database {
 	
 	
 	//returns a list of Polls which relate to the keyword passed
-	public ArrayList<Poll> searchForPolls(String keyword){
-		//start with all the polls in the database
-		ArrayList<Poll> allPolls = getPolls();
-		ArrayList<Poll> returnPolls = new ArrayList<Poll>();
+		public ArrayList<Poll> searchForPolls(String keyword){
+			keyword = keyword.toLowerCase();
+			//start with all the polls in the database
+			ArrayList<Poll> allPolls = getPolls();
+			ArrayList<Poll> returnPolls = new ArrayList<Poll>();
+			
+			//go through the list of polls and add the ones that pertain to the keyword
+			for(int i = 0; i < allPolls.size(); i++){
+				Poll currPoll = allPolls.get(i);
+				String title = currPoll.getTitle();
+				ArrayList<String> tags = currPoll.getTags();
+				Boolean match = false;
+				
+				//check if title contains keywords
+				if((title.toLowerCase()).contains(keyword)){
+					match = true;
+				}
+				//if title does not contain keyword, check tags
+				if(!match){
+					for(int j = 0; j < tags.size(); j++){
+						if((tags.get(j)).toLowerCase().contains(keyword)){
+							match = true;
+							break;
+						}//if
+					}//for j
+				}//if
+				
+				//if not match, delete from polls list
+				if(match){
+					returnPolls.add(currPoll);
+				}
+				
+			}//for i
+			
+			return returnPolls;
+		}//searchForPolls()
 		
-		//go through the list of polls and add the ones that pertain to the keyword
-		for(int i = 0; i < allPolls.size(); i++){
-			Poll currPoll = allPolls.get(i);
-			String title = currPoll.getTitle();
-			ArrayList<String> tags = currPoll.getTags();
-			Boolean match = false;
-			
-			//check if title contains keywords
-			if(title.contains(keyword)){
-				match = true;
-			}
-			//if title does not contain keyword, check tags
-			if(!match){
-				for(int j = 0; j < tags.size(); j++){
-					if(tags.get(j).contains(keyword)){
-						match = true;
-						break;
-					}//if
-				}//for j
-			}//if
-			
-			//if match, add to list of 
-			if(match){
-				returnPolls.add(currPoll);
-			}
-			
-		}//for i
 		
-		return returnPolls;
-	}//searchForPolls()
-	
-	
-	//returns a list of Entities which relate to the keyword passed
-	public ArrayList<Entity> searchForEntities(String keyword){
-		//start with all the entities in the database
-		ArrayList<Entity> allEntities = getEntities();
-		ArrayList<Entity> returnEntities = new ArrayList<Entity>();
-		
-		//go through the list of polls and delete the ones that do not pertain to the keyword
-		for(int i = 0; i < allEntities.size(); i++){
-			Entity currEntity = allEntities.get(i);
-			String title = currEntity.getTitle();
-			String description = currEntity.getDescription();
-			ArrayList<String> tags = currEntity.getTags();
-			Boolean match = false;
+		//returns a list of Entities which relate to the keyword passed
+		public ArrayList<Entity> searchForEntities(String keyword){
+			keyword = keyword.toLowerCase();
+			//start with all the entities in the database
+			ArrayList<Entity> allEntities = getEntities();
+			System.out.println("total num entities: " + allEntities.size());
+			ArrayList<Entity> returnEntities = new ArrayList<Entity>();
 			
-			//check if title or description contains keywords
-			if(title.contains(keyword) || description.contains(keyword)){
-				match = true;
-			}
-			//if title or description does not contain keyword, check tags
-			if(!match){
-				for(int j = 0; j < tags.size(); j++){
-					if(tags.get(j).contains(keyword)){
-						match = true;
-						break;
-					}//if
-				}//for j
-			}//if
+			//go through the list of polls and delete the ones that do not pertain to the keyword
+			for(int i = 0; i < allEntities.size(); i++){
+				Entity currEntity = allEntities.get(i);
+				String title = currEntity.getTitle();
+				String description = currEntity.getDescription();
+				ArrayList<String> tags = currEntity.getTags();
+				Boolean match = false;
+				
+				//check if title or description contains keywords
+				if((title.toLowerCase()).contains(keyword) || (description.toLowerCase()).contains(keyword)){
+					match = true;
+				}
+				//if title or description does not contain keyword, check tags
+				if(!match){
+					for(int j = 0; j < tags.size(); j++){
+						String currTag = tags.get(j);
+						if(currTag.equalsIgnoreCase("fucking idiot")){
+							int a = 0;
+							a++;
+						}
+						if(currTag.toLowerCase().equalsIgnoreCase(keyword)){
+							match = true;
+							break;
+						}//if
+					}//for j
+				}//if
+				
+				//if not match, delete from polls list
+				if(match){
+					returnEntities.add(currEntity);
+				}
+				
+			}//for i
 			
-			//if not match, delete from polls list
-			if(!match){
-				returnEntities.add(currEntity);
-			}
-			
-		}//for i
-		
-		return returnEntities;
-	}//searchForEntities()
+			return returnEntities;
+		}//searchForEntities()
 	
 	
 	public static void main(String [] args){
