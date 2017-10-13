@@ -555,7 +555,7 @@ public class Database {
 			ps = conn.prepareStatement("SELECT numViews "
 					+ "FROM " + tableName + " "
 					+ "WHERE " + idType + " = '" + subjectID + "';");
-
+			rs = ps.executeQuery();
 			rs.next();
 			numViews = rs.getInt("numViews");
 		} catch (SQLException sqle) {
@@ -668,11 +668,55 @@ public class Database {
 //		System.out.println("lName: " + user.getLName());
 		
 		//test addEntity
-//		ArrayList<String> tags = new ArrayList<String>();
-//		tags.add("yum");
-//		Calendar calendar = Calendar.getInstance();
-//		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "anImageURL");
-//		db.addEntity(newEntity);
+		ArrayList<String> tags = new ArrayList<String>();
+		tags.add("yum");
+		Calendar calendar = Calendar.getInstance();
+		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "anImageURL");
+		db.addEntity(newEntity);
+		db.addNumView(1, "Entity");
+		db.addNumView(1, "Entity");
+		db.addNumView(1, "Entity");
+		db.addNumView(1, "Entity");
+		
+		
+		ArrayList<String> tags1 = new ArrayList<String>();
+		tags.add("yum");
+		Calendar cal = Calendar.getInstance();
+		Entity newEntity1 = new Entity("hello", 2, "hi", tags1, true, calendar, "url");
+		db.addEntity(newEntity1);
+		db.addNumView(2, "Entity");
+		db.addNumView(2, "Entity");
+		
+		
+		Entity newEntity2 = new Entity("Morgan", 3, "hi", tags1, true, calendar, "url");
+		db.addEntity(newEntity2);
+		db.addNumView(3, "Entity");
+		db.addNumView(3, "Entity");
+		db.addNumView(3, "Entity");
+		db.addNumView(3, "Entity");
+		db.addNumView(3, "Entity");
+		db.addNumView(3, "Entity");
+		db.addNumView(3, "Entity");
+		db.addNumView(3, "Entity");
+		
+		
+		Entity newEntity3 = new Entity("Sebastian", 4, "hi", tags1, true, calendar, "url");
+		db.addEntity(newEntity3);
+		db.addNumView(4, "Entity");
+		db.addNumView(4, "Entity");
+		db.addNumView(4, "Entity");
+		db.addNumView(4, "Entity");
+		db.addNumView(4, "Entity");
+		db.addNumView(4, "Entity");
+		
+		
+		
+		Entity newEntity4 = new Entity("Natalie", 5, "hi", tags1, true, calendar, "url");
+		db.addEntity(newEntity4);
+		db.addNumView(5, "Entity");
+		db.addNumView(5, "Entity");
+		db.addNumView(5, "Entity");
+
 		
 		//test addPoll
 //		ArrayList<String> tags = new ArrayList<String>();
