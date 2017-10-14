@@ -15,8 +15,8 @@
 		KingManager km = (KingManager)session.getAttribute("kingManager");
 		
 		
-		String title = request.getParameter("title");		//poll title
-		int id = km.getIds();								//poll id
+		String title = request.getParameter("title");		//entity title
+		int id = km.getIds();								//entity id
 		id++;
 		String allTags = request.getParameter("tags");		//all tags, separated by commas
 		ArrayList<String> tags = new ArrayList<String>();	//list of tags
@@ -25,26 +25,37 @@
 			tags.add(separatedTags[i]);
 		}//for()
 		
-		String description = request.getParameter("description");
+		String description = request.getParameter("description");	//description of entity
 		
-		
-		//check to see that user entered at least 2 poll options
-		
-		
-		Boolean isInfinite = true;
+		//if checkbox checked, entity open forever
+		Boolean isInfinite = false;
 		String infiniteCheckbox = request.getParameter("checkbox");
 		if(infiniteCheckbox == null)
-			isInfinite = false;
+			isInfinite = true;
 		
-		int day = Integer.parseInt(request.getParameter("day"));
-		int month = Integer.parseInt(request.getParameter("month"));
-		int year = Integer.parseInt(request.getParameter("year"));
-		int hour = Integer.parseInt(request.getParameter("hour"));
-		int minute = Integer.parseInt(request.getParameter("minute"));
+		String date = request.getParameter("endDate");
+		String[] splitDate = date.split("/");
+		int day = 0; 
+		int month = 0;
+		int year = 0;
+		
+		if(splitDate.length != 3){
+			System.out.println("incorrect end date");
+		}
+		else{
+			day = Integer.parseInt(splitDate[0]);
+			month = Integer.parseInt(splitDate[1]);
+			year = Integer.parseInt(splitDate[2]);
+		}
+
 		Calendar timeEnd = Calendar.getInstance();
-		timeEnd.set(year, month, day, hour, minute); //time that poll will close 
+		timeEnd.set(year, month, day, 12, 00); 					//date that poll will close (at midnight)
 		
 		String image = request.getParameter("image");
+		
+		//missing info
+		if(title == null || image == null || description == null)
+			System.out.println("missing info");
 		
 		Entity newEntity = new Entity(title, id, description, tags, isInfinite,  timeEnd, image);
 	

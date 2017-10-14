@@ -40,20 +40,35 @@
 			System.out.println("Must add at least 2 options");
 		}
 		
-		Boolean isInfinite = true;
+		//if checkbox checked, poll open forever
+		Boolean isInfinite = false;
 		String infiniteCheckbox = request.getParameter("checkbox");
 		if(infiniteCheckbox == null)
-			isInfinite = false;
+			isInfinite = true;
 		
-		int day = Integer.parseInt(request.getParameter("day"));
-		int month = Integer.parseInt(request.getParameter("month"));
-		int year = Integer.parseInt(request.getParameter("year"));
-		int hour = Integer.parseInt(request.getParameter("hour"));
-		int minute = Integer.parseInt(request.getParameter("minute"));
+		String date = request.getParameter("endDate");
+		String[] splitDate = date.split("/");
+		int day = 0; 
+		int month = 0;
+		int year = 0;
+		
+		if(splitDate.length != 3){
+			System.out.println("incorrect end date");
+		}
+		else{
+			day = Integer.parseInt(splitDate[0]);
+			month = Integer.parseInt(splitDate[1]);
+			year = Integer.parseInt(splitDate[2]);
+		}
+
 		Calendar timeEnd = Calendar.getInstance();
-		timeEnd.set(year, month, day, hour, minute); //time that poll will close 
+		timeEnd.set(year, month, day, 12, 00); 					//date that poll will close (at midnight)
 		
 		String image = request.getParameter("image");
+		
+		//missing info
+		if(title == null)
+			System.out.println("missing info");
 		
 		Poll newPoll = new Poll(title, id, tags, options, isInfinite, timeEnd, image);
 		
