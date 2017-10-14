@@ -165,6 +165,13 @@
 		                                <a href=<%="\" servlets/rateEntity.jsp?vote='downVote'&id=" + subjectIDint + "\""%> >
 		                                	<input style="display: inline-block" class="btn btn-finish btn-primary" type="button" value='Down Vote'/>
 		                                </a>
+		                                <form action="servlets/comment.jsp">
+											<textarea name="commentTextbox"></textarea>
+											<input type="hidden" name="id" value=<%=subjectIDint %>/>
+											<input type="hidden" name="subjectType" value="Entity"/>
+											<input type="submit" value="Add Comment">
+											Anonymous <input type="checkBox"  name="checkbox">
+										</form>
 	                            </div>
 	                            
 	                            <!-- .property-meta -->

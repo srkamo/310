@@ -26,9 +26,13 @@
 			
 			if(subjectType.equals("Entity")){
 				km.newEntityComment(id, userEmail, comment, isAnon);
+				session.setAttribute("kingManager", km);
+				response.sendRedirect("\" entityPage.jsp?subjectID=" + id + "\"");
 			}
 			else{
 				km.newPollComment(id, userEmail, comment, isAnon);
+				session.setAttribute("kingManager", km);
+				response.sendRedirect("\" pollPage.jsp?subjectID=" + id + "\"");
 			}
 	
 		%>
