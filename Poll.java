@@ -1,8 +1,8 @@
+package Business; 
+
 import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.swing.text.html.parser.TagElement;
 
 public class Poll {
 
@@ -19,29 +19,32 @@ public class Poll {
 	private HashMap<String, Integer> pollVotes;
 	
 	
-	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
+	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, 
+				Boolean isInfinite1, Calendar timeEnd1, String image1) {
 		title = title1; 
 		id = id1; 
-		tags = tags1; // does this work? -> can ArrayLists be copied like this?
-		options = options1; // does this work? -> can ArrayLists be copied like this?
+		tags = tags1; 		
+		options = options1; 
 		isInfinite = isInfinite1; 
-		timeEnd = timeEnd1; // does this work? -> can Calendars be copied like this?
+		timeEnd = timeEnd1;
 		image = image1; 
 		numViews = 0;
+		comments = new ArrayList<CommentAction>();
+		pollVotes = new HashMap<String, Integer>();
 	}
 	
-	
-	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, int numViews1, ArrayList<CommentAction> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
+	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, 
+			int numViews1, ArrayList<CommentAction> comments1, Boolean isInfinite1, Calendar timeEnd1, String image1, HashMap<String, Integer> pollVotes1) { // Copy Constructor
 		title = title1; 
 		id = id1; 
-		tags = tags1;
+		tags = tags1; 
 		options = options1;
 		numViews = numViews1; 
-		comments = comments1;
+		comments = comments1; 		
 		isInfinite = isInfinite1;
-		timeEnd = timeEnd1;
+		timeEnd = (Calendar) timeEnd1.clone();
 		image = image1;
-		pollVotes = pollVotes1;
+		pollVotes = new HashMap<String, Integer>(pollVotes1);
 	}
 	
 	public String getTitle() {
@@ -55,9 +58,10 @@ public class Poll {
 	public ArrayList<String> getTags() {
 		return tags;
 	}
-	private void addTag(String newTag) {
-		// if tag doesn't exist 
-		tags.add(newTag);
+	public void addTag(String newTag) {
+		if (!(tags.contains(newTag)) ) {
+			tags.add(newTag);
+		}
 	}
 	public ArrayList<String> getOptions() {
 		return options; 
@@ -103,11 +107,10 @@ public class Poll {
 	public Boolean isInfinite() {//this is new 
 		return isInfinite;
 	}
-	public Calendar getTimeEnd() { //this is new 
+	public Calendar getTimeEnd() { //this is new -> Should it return calendar object or stored Calendar values? (i.e. year, month, date, etc.) 
 		return timeEnd;
 	}
 	public void addComment(CommentAction comment) { // this is new 
 		comments.add(comment);
 	}
-
 }
