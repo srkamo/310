@@ -18,7 +18,7 @@ VALUES("Sebastian" , "Rinkema", "srinkema@usc.edu", "password5");
 
 #Create Entreprenurship Club Poll
 INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd )
-VALUES(1, "Best Entreprenurship Club", "", 0, 1, '2011-12-11');
+VALUES(1, "Best Entreprenurship Club", "", 0, 0, '2019-12-11');
 
 #Create Entreprenurship Club Poll Tags 
 INSERT INTO PollTags(tagID, pollID, title)
@@ -46,16 +46,16 @@ VALUES(4, 1, "Design for America USC", 0);
 
 #Create Pizza Entities
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(1, "Pizza Studio", "Pizza in a studio", 0, " ", 0, 1, '1995-10-10');
+VALUES(1, "Pizza Studio", "Pizza in a studio", 0, " ", 0, 0, '2019-10-10');
 
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(2, "Blaze Pizza", "Pizza that is Blazin' ", 0, " ", 0, 1, '1997-04-10');
+VALUES(2, "Blaze Pizza", "Pizza that is Blazin' ", 0, " ", 0, 0, '2019-04-10');
 
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(3, "Domino's",  "Pizza that is good", 0, " ", 0, 1, '1995-04-05');
+VALUES(3, "Domino's",  "Pizza that is good", 0, " ", 0, 0, '2019-04-05');
 
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(4, "Pizza Hut", "Pizza with the Hut", 0, " ", 0, 1, '1996-08-05');
+VALUES(4, "Pizza Hut", "Pizza with the Hut", 0, " ", 0, 0, '2019-08-05');
 
 
 #Create Pizza Entity Tags 
@@ -75,16 +75,16 @@ VALUES(4, 4, "Pizza");
 
 #Create Computer Science Entities
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(5, "CS 104",  "The worst class, hands down", 0, " ", 0, 1, '1995-04--06');
+VALUES(5, "CS 104",  "The worst class, hands down", 0, " ", 0, 0, '2019-04-06');
 
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(6, "CS 170", "Not as bad as 104", 0, " ", 0, 1, '1996-04-03');
+VALUES(6, "CS 170", "Not as bad as 104", 0, " ", 0, 0, '2019-04-03');
 
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(7, "CS 201", "Not too bad",  0, " ", 0, 1, '1995-04-06');
+VALUES(7, "CS 201", "Not too bad",  0, " ", 0, 0, '2019-04-06');
 
 INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
-VALUES(8, "CS 270", "Makes 170 look like a joke", 0, " ", 0, 1, '1995-01-03');
+VALUES(8, "CS 270", "Makes 170 look like a joke", 0, " ", 0, 0, '2019-01-03');
 
 
 #Create Computer Science Entity Tags 
@@ -102,7 +102,7 @@ VALUES(8, 8, "Computer Science");
 
 #Create Computer Science Poll 
 INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd )
-VALUES(2, "Best Computer Science Class", " ", 0, 1, '1995-02-03');
+VALUES(2, "Best Computer Science Class", " ", 0, 0, '2019-02-03');
 
 #Create Computer Science Poll Tags 
 INSERT INTO PollTags(tagID, pollID, title)
@@ -121,3 +121,27 @@ VALUES(7, 2, "CS 201", 0);
 INSERT INTO PollOptions(optionID, pollID, title, numVotes)
 VALUES(8, 2, "CS 270", 0);
 
+
+#Create Pizza Poll 
+INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd)
+VALUES(3, "Best Pizza at USC", " ", 0, 0, '2019-04-05'); 
+
+#Create Pizza Poll Tags
+INSERT INTO PollTags(tagID, pollID, title) 
+VALUES(4, 3, "Pizza");
+
+INSERT INTO PollTags(tagID, pollID, title) 
+VALUES(5, 3, "Food"); 
+
+#Create Pizza Poll Options
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(9, 3, "Pizza Studio", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(10, 3, "Blaze Pizza", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(11, 3, "Dominos", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(12, 3, "Pizza Hut", 0);
