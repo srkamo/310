@@ -11,6 +11,7 @@
 		<%
 			KingManager km = (KingManager)session.getAttribute("kingManager");
 			km.setCurUser(null);
+			session.setAttribute("kingManager", km);
 			response.sendRedirect("../index.jsp"); 
 		%>
 	</body>
