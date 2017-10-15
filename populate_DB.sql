@@ -1,0 +1,123 @@
+#Create Users 
+INSERT INTO Users(fName, lName, email, password)
+VALUES("Bob", "Muller", "bmuller@usc.edu", "password1");
+
+INSERT INTO Users(fName, lName, email, password)
+VALUES("Natalie", "Monger", "nmonger@usc.edu", "password2"); 
+
+INSERT INTO Users(fName, lName, email, password)
+VALUES("Morgan", "Bent", "mbent@usc.edu", "password3"); 
+
+INSERT INTO Users(fName, lName, email, password)
+VALUES("Peter" , "Tillman", "ptillman@usc.edu", "password4"); 
+
+INSERT INTO Users(fName, lName, email, password)
+VALUES("Sebastian" , "Rinkema", "srinkema@usc.edu", "password5"); 
+
+
+
+#Create Entreprenurship Club Poll
+INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd )
+VALUES(1, "Best Entreprenurship Club", "", 0, 1, 0);
+
+#Create Entreprenurship Club Poll Tags 
+INSERT INTO PollTags(tagID, pollID, title)
+VALUES(1, 1, "Entreprenurship");
+
+INSERT INTO PollTags(tagID, pollID, title)
+VALUES(2, 1, "Club");
+
+#Create Entreprenurship Club Poll Options 
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(1, 1, "SparckSC", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(2, 1, "Lava Lab", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(3, 1, "Sigma Eta Pi", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(4, 1, "Design for America USC", 0);
+
+
+
+
+
+#Create Pizza Entities
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(1, "Pizza Studio", "Pizza in a studio", 0);
+
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(2, "Blaze Pizza", "Pizza that is Blazin' ", 0);
+
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(3, "Domino's",  "Pizza that is good", 0);
+
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(4, "Pizza Hut", "Pizza with the Hut", 0);
+
+
+#Create Pizza Entity Tags 
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(1, 1, "Pizza");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(2 ,2, "Pizza");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(3, 3, "Pizza");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(4, 4, "Pizza");
+
+
+
+#Create Computer Science Entities
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(5, "CS 104",  "The worst class, hands down", 0, " ", 0, 1, 0);
+
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(6, "CS 170", "Not as bad as 104", 0, " ", 0, 1, 0);
+
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(7, "CS 201", 0, " ", 0, 1, 0);
+
+INSERT INTO Entities(entityID, title, description, rating, image, numViews, isInfinite, timeEnd)
+VALUES(8, "CS 270", "Makes 170 look like a joke", 0, " ", 0, 1, 0);
+
+
+#Create Computer Science Entity Tags 
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(5, 5,  "Computer Science");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(6, 6,  "Computer Science");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(7, 7,  "Computer Science");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(8, 8, "Computer Science");
+
+#Create Computer Science Poll 
+INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd )
+VALUES(2, "Best Computer Science Class", " ", 0, 1, 0);
+
+#Create Computer Science Poll Tags 
+INSERT INTO PollTags(tagID, pollID, title)
+VALUES(3, 2 , "Computer Science");
+
+#Create Computer Science Poll Options 
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(5, 2, "CS 104", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(6, 2, "CS 170", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(7, 2, "CS 201", 0);
+
+INSERT INTO PollOptions(optionID, pollID, title, numVotes)
+VALUES(8, 2, "CS 270", 0);
+
