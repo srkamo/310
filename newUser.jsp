@@ -22,21 +22,29 @@
 			String lName = request.getParameter("lName");
 			
 			//error: need to fill all boxes
-			if(email == null || password == null || fName == null || lName == null){
+			if(email.equals("") || password.equals("") || fName.equals("") || lName.equals("")){
 				System.out.println("Invalid credentials");
+				String errorMessage = "ERROR: Must fill out all boxes.";
+				session.setAttribute("errorMessageSignUp", errorMessage);
+				response.sendRedirect("../login.jsp");
 			}
 		
 			//email is valid, let user sign up
-			if(EmailVerifier.validate(email)){
+			else if(EmailVerifier.validate(email)){
 				System.out.println("Greetings Fellow Trojan");
 				User newUser = new User(email, Hash.hash(password), fName, lName);
 				km.addUser(newUser);
 				session.setAttribute("kingManager", km);
+				session.setAttribute("errorMessageSignUp", "");
 				response.sendRedirect("../feed.jsp");
 			}
 			//email not valid
-			else
+			else{
 				System.out.println("Not Validated");
+				String errorMessage = "ERROR: Invalid USC email address.";
+				session.setAttribute("errorMessageSignUp", errorMessage);
+				response.sendRedirect("../login.jsp");
+			}
 			
 			
 		%>
