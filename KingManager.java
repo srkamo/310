@@ -1,6 +1,7 @@
 package Business;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -10,12 +11,14 @@ import Database.Database;
 
 public class KingManager {
 
+	
+	public int ids;
 	private Database database;
 	private EntityManager entityManager;
 	private PollManager pollManager;
 	private User curUser;
 	private ArrayList<Object> allItemsDisplayed;
-	private int ids;
+	
 	
 	public KingManager(){
 		database  = new Database();
@@ -81,10 +84,8 @@ public class KingManager {
 	}//getAllItemsDisplayed()
 	
 	
-	//returns the number of items to use as an id
-	public int getIds(){
-		return ids;
-	}//getIds()
+	
+	
 	
 /*----------------Database------------------------------- */
 	public User getUser(String email){
@@ -102,6 +103,7 @@ public class KingManager {
 	
 	public void addEntity(Entity newEntity){
 		database.addEntity(newEntity);
+		allItemsDisplayed.add(newEntity);
 		entityManager.addEntity(newEntity);
 		ids++;
 	}
@@ -130,6 +132,7 @@ public class KingManager {
 	
 	public void addPoll(Poll newPoll){
 		database.addPoll(newPoll);
+		allItemsDisplayed.add(newPoll);
 		pollManager.addPoll(newPoll);
 		ids++;
 	}
@@ -150,5 +153,30 @@ public class KingManager {
 		Action action = new Action(isAnon, userEmail, pollID);
 		database.addAction(action);
 	}
+	
+	
+	//returns the number of items to use as an id
+		public int getIds(){
+			return ids;
+		}//getIds()
+		
+		public int getCurrId(){
+			return ids;
+		}
+		
+		
+		public Boolean isPollExpired(int id){
+			Poll currPoll = this.getPoll(id);
+			Calendar curCal = currPoll.getTimeEnd();
+			Calendar now = Calendar.getInstance();
+			return curCal.before(now);
+		}
+		
+		public Boolean isEntityExpired(int id){
+			Entity currEntity = this.getEntity(id);
+			Calendar curCal = currEntity.getTimeEnd();
+			Calendar now = Calendar.getInstance();
+			return curCal.before(now);
+		}
 	
 }

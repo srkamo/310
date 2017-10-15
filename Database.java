@@ -1,4 +1,4 @@
-
+package Database; 
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +20,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.sql.Timestamp;
 import java.util.Vector;
+
+import Business.Action;
+import Business.CommentAction;
+import Business.Entity;
+import Business.Poll;
+import Business.PollAction;
+import Business.RatingAction;
+import Business.User;
 
 
 
@@ -169,8 +177,8 @@ public class Database {
 		
 		//add the activity to the Activity Table
 		try{
-			ps = conn.prepareStatement("INSERT INTO Activity(userID, isAnon, actionType, subjectID, actionValue)"
-					+ "VALUES('" + userID + "', '" + isAnon + "', '" + actionType + "', '" 
+			ps = conn.prepareStatement("INSERT INTO Activities(userID, isAnon, type, subjectID, actionValue)"
+					+ "VALUES('" + userID + "', '" + ((isAnon)? 1:0) + "', '" + actionType + "', '" 
 					+ subjectID + "', '" + actionValue + "')");
 			ps.execute();
 		} catch(SQLException sqle){
@@ -222,6 +230,7 @@ public class Database {
 					+ numViews + "', '" + isInfinite + "', '" + timeEnd + "')");
 			ps.execute();
 		} catch(SQLException sqle){
+			System.out.println(" title: " + title);
 			System.out.println("sqle in addEntity: " + sqle.getMessage());
 		}
 		
@@ -398,7 +407,7 @@ public class Database {
 		Timestamp timeEnd = calendarToTimestamp(timeEndCal);
 		
 		try{
-			ps = conn.prepareStatement("INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd )"
+			ps = conn.prepareStatement("INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd)"
 					+ "VALUES('" + id + "', '" + title + "', '" + image + "', '" + numViews + "', '" 
 					+ isInfinite + "', '" + timeEnd + "')");
 			ps.execute();
@@ -555,6 +564,7 @@ public class Database {
 			ps = conn.prepareStatement("SELECT numViews "
 					+ "FROM " + tableName + " "
 					+ "WHERE " + idType + " = '" + subjectID + "';");
+
 			rs = ps.executeQuery();
 			rs.next();
 			numViews = rs.getInt("numViews");
@@ -578,108 +588,130 @@ public class Database {
 	
 	
 	//returns a list of Polls which relate to the keyword passed
-		public ArrayList<Poll> searchForPolls(String keyword){
-			keyword = keyword.toLowerCase();
-			//start with all the polls in the database
-			ArrayList<Poll> allPolls = getPolls();
-			ArrayList<Poll> returnPolls = new ArrayList<Poll>();
-			
-			//go through the list of polls and add the ones that pertain to the keyword
-			for(int i = 0; i < allPolls.size(); i++){
-				Poll currPoll = allPolls.get(i);
-				String title = currPoll.getTitle();
-				ArrayList<String> tags = currPoll.getTags();
-				Boolean match = false;
+			public ArrayList<Poll> searchForPolls(String keyword){
+				keyword = keyword.toLowerCase();
+				//start with all the polls in the database
+				ArrayList<Poll> allPolls = getPolls();
+				ArrayList<Poll> returnPolls = new ArrayList<Poll>();
 				
-				//check if title contains keywords
-				if((title.toLowerCase()).contains(keyword)){
-					match = true;
-				}
-				//if title does not contain keyword, check tags
-				if(!match){
-					for(int j = 0; j < tags.size(); j++){
-						if((tags.get(j)).toLowerCase().contains(keyword)){
-							match = true;
-							break;
-						}//if
-					}//for j
-				}//if
+				//go through the list of polls and add the ones that pertain to the keyword
+				for(int i = 0; i < allPolls.size(); i++){
+					Poll currPoll = allPolls.get(i);
+					String title = currPoll.getTitle();
+					ArrayList<String> tags = currPoll.getTags();
+					Boolean match = false;
+					
+					//check if title contains keywords
+					if((title.toLowerCase()).contains(keyword)){
+						match = true;
+					}
+					//if title does not contain keyword, check tags
+					if(!match){
+						for(int j = 0; j < tags.size(); j++){
+							if((tags.get(j)).toLowerCase().contains(keyword)){
+								match = true;
+								break;
+							}//if
+						}//for j
+					}//if
+					
+					//if not match, delete from polls list
+					if(match){
+						returnPolls.add(currPoll);
+					}
+					
+				}//for i
 				
-				//if not match, delete from polls list
-				if(match){
-					returnPolls.add(currPoll);
-				}
-				
-			}//for i
-			
-			return returnPolls;
-		}//searchForPolls()
+				return returnPolls;
+			}//searchForPolls()
+	
+	
+	//returns a list of Entities which relate to the keyword passed
+	public ArrayList<Entity> searchForEntities(String keyword){
+		keyword = keyword.toLowerCase();
+		//start with all the entities in the database
+		ArrayList<Entity> allEntities = getEntities();
+		System.out.println("total num entities: " + allEntities.size());
+		ArrayList<Entity> returnEntities = new ArrayList<Entity>();
 		
+		//go through the list of polls and delete the ones that do not pertain to the keyword
+		for(int i = 0; i < allEntities.size(); i++){
+			Entity currEntity = allEntities.get(i);
+			String title = currEntity.getTitle();
+			String description = currEntity.getDescription();
+			ArrayList<String> tags = currEntity.getTags();
+			Boolean match = false;
+			
+			//check if title or description contains keywords
+			if((title.toLowerCase()).contains(keyword) || (description.toLowerCase()).contains(keyword)){
+				match = true;
+			}
+			//if title or description does not contain keyword, check tags
+			if(!match){
+				for(int j = 0; j < tags.size(); j++){
+					String currTag = tags.get(j);
+					if(currTag.equalsIgnoreCase("fucking idiot")){
+						int a = 0;
+						a++;
+					}
+					if(currTag.toLowerCase().equalsIgnoreCase(keyword)){
+						match = true;
+						break;
+					}//if
+				}//for j
+			}//if
+			
+			//if not match, delete from polls list
+			if(match){
+				returnEntities.add(currEntity);
+			}
+			
+		}//for i
 		
-		//returns a list of Entities which relate to the keyword passed
-		public ArrayList<Entity> searchForEntities(String keyword){
-			keyword = keyword.toLowerCase();
-			//start with all the entities in the database
-			ArrayList<Entity> allEntities = getEntities();
-			System.out.println("total num entities: " + allEntities.size());
-			ArrayList<Entity> returnEntities = new ArrayList<Entity>();
+		return returnEntities;
+	}//searchForEntities()
+	
+	
+	//returns the number of polls + entities in teh database
+	public int getNumThings(){
+		int numThings = 0;
+		
+		try{
+			ps = conn.prepareStatement("SELECT p.title, e.title "
+					+ "FROM Polls p, Entities e;");
+			rs = ps.executeQuery();
 			
-			//go through the list of polls and delete the ones that do not pertain to the keyword
-			for(int i = 0; i < allEntities.size(); i++){
-				Entity currEntity = allEntities.get(i);
-				String title = currEntity.getTitle();
-				String description = currEntity.getDescription();
-				ArrayList<String> tags = currEntity.getTags();
-				Boolean match = false;
-				
-				//check if title or description contains keywords
-				if((title.toLowerCase()).contains(keyword) || (description.toLowerCase()).contains(keyword)){
-					match = true;
-				}
-				//if title or description does not contain keyword, check tags
-				if(!match){
-					for(int j = 0; j < tags.size(); j++){
-						String currTag = tags.get(j);
-						if(currTag.equalsIgnoreCase("fucking idiot")){
-							int a = 0;
-							a++;
-						}
-						if(currTag.toLowerCase().equalsIgnoreCase(keyword)){
-							match = true;
-							break;
-						}//if
-					}//for j
-				}//if
-				
-				//if not match, delete from polls list
-				if(match){
-					returnEntities.add(currEntity);
-				}
-				
-			}//for i
-			
-			return returnEntities;
-		}//searchForEntities()
+			while(rs.next()){
+				numThings++;
+			}
+		} catch(SQLException sqle){
+			System.out.println("sqle in getNumThings: " + sqle.getMessage());
+		} catch(ArithmeticException ae){
+			System.out.println("ae in getNumThings: " + ae.getMessage());
+		}
+		
+		return numThings;
+	}//getNumThings()
 	
 	
 	public static void main(String [] args){
 		Database db = new Database();
 		
 		//test addUser
-//		User newUser = new User("mbent@usc.edu", "password", "Morgan", "Bent");
-//		db.addUser(newUser);
+		User newUser = new User("mbent@usc.edu", "password", "Morgan", "Bent");
+		db.addUser(newUser);
 		
 		//test getUser
-//		User user = db.getUser("mbent@usc.edu");
-//		System.out.println("Email: " + user.getEmail());
-//		System.out.println("fName: " + user.getFName());
-//		System.out.println("lName: " + user.getLName());
+		User user = db.getUser("mbent@usc.edu");
+		System.out.println("Email: " + user.getEmail());
+		System.out.println("fName: " + user.getFName());
+		System.out.println("lName: " + user.getLName());
 		
 		//test addEntity
 		ArrayList<String> tags = new ArrayList<String>();
 		tags.add("yum");
 		Calendar calendar = Calendar.getInstance();
-		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "anImageURL");
+		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
 		db.addEntity(newEntity);
 		db.addNumView(1, "Entity");
 		db.addNumView(1, "Entity");
@@ -690,13 +722,13 @@ public class Database {
 		ArrayList<String> tags1 = new ArrayList<String>();
 		tags.add("yum");
 		Calendar cal = Calendar.getInstance();
-		Entity newEntity1 = new Entity("hello", 2, "hi", tags1, true, calendar, "url");
+		Entity newEntity1 = new Entity("hello", 2, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
 		db.addEntity(newEntity1);
 		db.addNumView(2, "Entity");
 		db.addNumView(2, "Entity");
 		
 		
-		Entity newEntity2 = new Entity("Morgan", 3, "hi", tags1, true, calendar, "url");
+		Entity newEntity2 = new Entity("Morgan", 3, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
 		db.addEntity(newEntity2);
 		db.addNumView(3, "Entity");
 		db.addNumView(3, "Entity");
@@ -708,7 +740,7 @@ public class Database {
 		db.addNumView(3, "Entity");
 		
 		
-		Entity newEntity3 = new Entity("Sebastian", 4, "hi", tags1, true, calendar, "url");
+		Entity newEntity3 = new Entity("Sebastian", 4, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
 		db.addEntity(newEntity3);
 		db.addNumView(4, "Entity");
 		db.addNumView(4, "Entity");
@@ -719,11 +751,63 @@ public class Database {
 		
 		
 		
-		Entity newEntity4 = new Entity("Natalie", 5, "hi", tags1, true, calendar, "url");
+		Entity newEntity4 = new Entity("Natalie", 5, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
 		db.addEntity(newEntity4);
 		db.addNumView(5, "Entity");
 		db.addNumView(5, "Entity");
 		db.addNumView(5, "Entity");
+		
+		Entity newEntity5 = new Entity("Natalie", 6, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+		db.addEntity(newEntity5);
+		db.addNumView(6, "Entity");
+		db.addNumView(6, "Entity");
+		db.addNumView(6, "Entity");
+		
+		Entity newEntity6 = new Entity("Natalie", 7, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+		db.addEntity(newEntity6);
+		db.addNumView(7, "Entity");
+		db.addNumView(7, "Entity");
+		db.addNumView(7, "Entity");
+	
+		Entity newEntity7 = new Entity("Natalie", 8, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+		db.addEntity(newEntity7);
+		db.addNumView(8, "Entity");
+		db.addNumView(8, "Entity");
+		db.addNumView(8, "Entity");
+		
+		Entity newEntity8 = new Entity("Natalie", 9, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+		db.addEntity(newEntity8);
+		db.addNumView(9, "Entity");
+		db.addNumView(9, "Entity");
+		db.addNumView(9, "Entity");
+		
+		Entity newEntity9 = new Entity("Natalie", 10, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+		db.addEntity(newEntity9);
+		db.addNumView(10, "Entity");
+		db.addNumView(10, "Entity");
+		db.addNumView(10, "Entity");
+		
+		Entity newEntity10 = new Entity("Natalie", 11, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+		db.addEntity(newEntity10);
+		db.addNumView(11, "Entity");
+		db.addNumView(11, "Entity");
+		db.addNumView(11, "Entity");
+		
+	
+		
+		//TODO: test poll
+		/*ArrayList<String> pollTags = new ArrayList<String>(); 
+		pollTags.add("hi");
+		pollTags.add("my");
+		pollTags.add("dear");
+		pollTags.add("friend");
+		ArrayList<String> pollOptions = new ArrayList<String>(); 
+		pollOptions.add("Blaze"); 
+		pollOptions.add("Pizza Studio"); 
+		db.addEntity(newEntity1);
+		db.addNumView(12, "Entity");
+		db.addNumView(12, "Entity");
+		db.addNumView(12, "Entity");*/
 
 		
 		//test addPoll
@@ -741,5 +825,4 @@ public class Database {
 		System.out.println(search.size());
 
 	}//main
-	
 }

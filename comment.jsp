@@ -13,27 +13,46 @@
 	<body>
 		<%
 			KingManager km = (KingManager)session.getAttribute("kingManager");
-			int id = Integer.parseInt(request.getParameter("id"));
-			String comment = request.getParameter("commentTextbox");
-			User currUser = km.getCurUser();
-			String userEmail = currUser.getEmail();
 			String subjectType = request.getParameter("subjectType");
 			
-			Boolean isAnon = false;
-			String checkbox = request.getParameter("checkbox");
-			if(checkbox == null)
-				isAnon = false;
-			
-			if(subjectType.equals("Entity")){
-				km.newEntityComment(id, userEmail, comment, isAnon);
-				session.setAttribute("kingManager", km);
-				response.sendRedirect("\" entityPage.jsp?subjectID=" + id + "\"");
+		
+			//if user is not logged in
+			if(km.getCurUser() == null){
+				String errorMessage = "You must be logged in to comment on this item.";
+				session.setAttribute("errorMessageComment", errorMessage);
+				
+				if(subjectType.equals("Entity")){
+					response.sendRedirect("../entityPage.jsp");
+				}
+				else{
+					response.sendRedirect("../pollPage.jsp");
+				}
 			}
+			//user is logged in
 			else{
-				km.newPollComment(id, userEmail, comment, isAnon);
-				session.setAttribute("kingManager", km);
-				response.sendRedirect("\" pollPage.jsp?subjectID=" + id + "\"");
+				session.setAttribute("errorMessageComment", "");
+				int id = Integer.parseInt(request.getParameter("id"));
+				String comment = request.getParameter("commentTextbox");
+				User currUser = km.getCurUser();
+				String userEmail = currUser.getEmail();
+				
+				Boolean isAnon = false;
+				String checkbox = request.getParameter("checkbox");
+				if(checkbox == null)
+					isAnon = false;
+				
+				if(subjectType.equals("Entity")){
+					km.newEntityComment(id, userEmail, comment, isAnon);
+					session.setAttribute("kingManager", km);
+					response.sendRedirect("\" entityPage.jsp?subjectID=" + id + "\"");
+				}
+				else{
+					km.newPollComment(id, userEmail, comment, isAnon);
+					session.setAttribute("kingManager", km);
+					response.sendRedirect("\" pollPage.jsp?subjectID=" + id + "\"");
+				}
 			}
+				
 	
 		%>
 	</body>
