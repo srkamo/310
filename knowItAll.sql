@@ -29,10 +29,10 @@ CREATE TABLE Polls(
     image VARCHAR(200) NOT NULL,
     numViews INT(11) NOT NULL,
     isInfinite bool NOT NULL,
-    timeEnd date NOT NULL
+    timeEnd timestamp NOT NULL
 );
 
-CREATE TABLE PollOptions(
+CREATE TABLE Options(
 	optionID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     pollID int(11) NOT NULL,
     title VARCHAR(50) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE Entities(
     image VARCHAR(200) NOT NULL,
     numViews INT(11) NOT NULL,
     isInfinite bool NOT NULL,
-    timeEnd date NOT NULL
+    timeEnd timestamp NOT NULL
 );
     
 CREATE TABLE PollTags(
