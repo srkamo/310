@@ -34,8 +34,9 @@
 		Boolean errorFound = false;
 		
 		if(km.getCurUser() == null){
-			System.out.print("CurrUser is NULL do some JS");
-		} 
+			errorMessage = "You must log in";
+			errorFound = true;
+		}
 		
 		String title = request.getParameter("title");		//entity title
 		int id = km.ids;								//entity id
@@ -53,46 +54,52 @@
 		//if checkbox checked, entity open forever
 		Boolean isInfinite = false;
 		String infiniteCheckbox = request.getParameter("checkbox");
-		if(infiniteCheckbox == null)
+		if(infiniteCheckbox.equals("on"))
 			isInfinite = true;
 		
-		String date = request.getParameter("date");
-		String[] splitDate = date.split("/");
-		int day = 0; 
-		int month = 0;
-		int year = 0;
+		System.out.println("isInfinite: " + isInfinite + "\ninfiniteCheckbox: " + infiniteCheckbox);
 		
-		if(splitDate.length != 3){
-			System.out.println("incorrect end date");
-			errorFound = true;
-			errorMessage = "Incorrect end date format";
-		}
-		else{
-			month = Integer.parseInt(splitDate[0]);
-			 day = Integer.parseInt(splitDate[1]);
-			year = Integer.parseInt(splitDate[2]);
-		}
+		Calendar timeEnd = Calendar.getInstance();
 		
-		System.out.println("day: " + day + " month: " + month + "year: " + year);
-
-		Calendar now = Calendar.getInstance();
-		Calendar timeEnd = new GregorianCalendar(year, month - 1, day);
+		if(isInfinite){
+			
+			String date = request.getParameter("date");
+			String[] splitDate = date.split("/");
+			int day = 0; 
+			int month = 0;
+			int year = 0;
 		
-		
-		if(timeEnd.before(now)){
-			System.out.println("Can't make an end time before the current time, dumby");
-			errorFound = true;
-			errorMessage = "End date must be in the future";
-		}
-		else{
-		
-			//missing info
-			if(title.equals("") || image.equals("") || description.equals("")){
-				System.out.println("missing info");
+			
+			if(splitDate.length != 3){
+				System.out.println("incorrect end date");
 				errorFound = true;
-				errorMessage = "Missing information";
+				errorMessage = "Incorrect end date format";
+			}
+			else{
+				month = Integer.parseInt(splitDate[0]);
+				 day = Integer.parseInt(splitDate[1]);
+				year = Integer.parseInt(splitDate[2]);
 			}
 			
+			System.out.println("day: " + day + " month: " + month + "year: " + year);
+	
+			Calendar now = Calendar.getInstance();
+			timeEnd = new GregorianCalendar(year, month - 1, day);
+			
+			
+			if(timeEnd.before(now)){
+				System.out.println("Can't make an end time before the current time, dumby");
+				errorFound = true;
+				errorMessage = "End date must be in the future";
+			}
+		
+		}
+		
+		//missing info
+		if(title.equals("") || image.equals("") || description.equals("")){
+			System.out.println("missing info");
+			errorFound = true;
+			errorMessage = "Missing information";
 		}
 		
 		if(!errorFound){

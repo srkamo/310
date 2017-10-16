@@ -40,7 +40,8 @@
 			System.out.println("km is nul");
 		
 		if(km.getCurUser() == null){
-			System.out.println("CurrUser is NULL do some JS");
+			errorMessage = "You must log in";
+			errorFound = true;
 		}
 		
 		String title = request.getParameter("title");		//poll title
@@ -53,6 +54,8 @@
 			tags.add(separatedTags[i]);
 		}//for()
 		
+		String image = request.getParameter("image");
+			
 		String option1 = request.getParameter("option1");
 		String option2 = request.getParameter("option2");
 		String option3 = request.getParameter("option3");
@@ -73,59 +76,49 @@
 		//if checkbox checked, poll open forever
 		Boolean isInfinite = false;
 		String infiniteCheckbox = request.getParameter("checkbox");
-		if(infiniteCheckbox == null)
+		if(infiniteCheckbox.equals("on"))
 			isInfinite = true;
 		
-		String date = request.getParameter("date");
-		String[] splitDate = date.split("/");
-		int day = 0; 
-		int month = 0;
-		int year = 0;
+		System.out.println("isInfinite: " + isInfinite + "\ninfiniteCheckbox: " + infiniteCheckbox);
 		
-		if(splitDate.length != 3){
-			System.out.println("incorrect end date");
-			errorMessage = "Incorrect end date format";
-			errorFound = true;
-		}
-		else{
-			month = Integer.parseInt(splitDate[0]);
-			day = Integer.parseInt(splitDate[1]);
-			year = Integer.parseInt(splitDate[2]);
-		}
+		Calendar timeEnd = Calendar.getInstance();
 		
-		System.out.println("day: " + day + " month: " + month + "year: " + year);
-		
-		Calendar now = Calendar.getInstance();
-		Calendar timeEnd = new GregorianCalendar(year, month - 1, day);
-	
-		
-		if(timeEnd.before(now)){
-			System.out.println("Can't make an end time before the current time, dumby");
-			errorMessage = "End date must be in the future";
-			errorFound = true;
-		}
-		else{
-			System.out.println("end time is okay.");
-			String image = request.getParameter("image");
+		if(!isInfinite){
+			String date = request.getParameter("date");
+			String[] splitDate = date.split("/");
+			int day = 0; 
+			int month = 0;
+			int year = 0;
 			
-			//missing info
-			if(title.equals("")){
-				System.out.println("missing info");
-				errorMessage = "Missing title";
+			if(splitDate.length != 3){
+				System.out.println("incorrect end date");
+				errorMessage = "Incorrect end date format";
 				errorFound = true;
 			}
+			else{
+				month = Integer.parseInt(splitDate[0]);
+				day = Integer.parseInt(splitDate[1]);
+				year = Integer.parseInt(splitDate[2]);
+			}
+			
+			System.out.println("day: " + day + " month: " + month + "year: " + year);
+			
+			Calendar now = Calendar.getInstance();
+			timeEnd = new GregorianCalendar(year, month - 1, day);
+		
+			
+			if(timeEnd.before(now)){
+				System.out.println("Can't make an end time before the current time, dumby");
+				errorMessage = "End date must be in the future";
+				errorFound = true;
+			}
+			else{
+				System.out.println("end time is okay.");
 				
-			
-			
-			Poll newPoll = new Poll(title, id, tags, options, isInfinite, timeEnd, image);
-			//give new poll to km
-			km.addPoll(newPoll);
-			session.setAttribute("kingManager", km);
-			
-			
-			
-			
+			}
+		
 		}
+		
 		
 		session.setAttribute("errorMessageCreatePoll", errorMessage);
 		if(errorFound){
@@ -134,6 +127,10 @@
 		}
 		else{
 			System.out.println("No Errors ");
+			Poll newPoll = new Poll(title, id, tags, options, isInfinite, timeEnd, image);
+			//give new poll to km
+			km.addPoll(newPoll);
+			session.setAttribute("kingManager", km);
 			response.sendRedirect("../feed.jsp");
 		}
 		
