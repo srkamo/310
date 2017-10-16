@@ -61,10 +61,9 @@
 	    ArrayList<String> results = new ArrayList<String>(); 
 	    for (int i = 0; i < options.size(); i++){
 	    		String pollResult = options.get(i) + " " + currPoll.getPollResults().get(options.get(i));
-	    		//results.add(i, currPoll.getPollResults().get(options.get(i)));
 	    		results.add(pollResult);
-	    		//System.out.println(options.get(i) + " " + results.get(i));
-	    }	    String image = currPoll.getImage(); 
+	    }	    
+	    String image = currPoll.getImage(); 
 	    Calendar cal = currPoll.getTimeEnd();
 	    String timeEnd = cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.DATE);
 	    Boolean openForever = currPoll.isInfinite();
