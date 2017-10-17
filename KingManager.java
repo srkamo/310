@@ -116,6 +116,15 @@ public class KingManager {
 		entityManager.newRating(entityID, upVote);
 		Action ratingAction = new RatingAction(isAnon, userEmail, entityID, upVote);
 		Action action = new Action(isAnon, userEmail, entityID);
+		
+		//add something here to update database with new rating value
+		if(upVote){
+			database.upVoteEntity(entityID);
+		}
+		else{
+			database.downVoteEntity(entityID);
+		}
+		
 		database.addAction(ratingAction);
 	}
 	
@@ -164,27 +173,27 @@ public class KingManager {
 	
 	
 	//returns the number of items to use as an id
-		public int getIds(){
-			return ids;
-		}//getIds()
-		
-		public int getCurrId(){
-			return ids;
-		}
-		
-		
-		public Boolean isPollExpired(int id){
-			Poll currPoll = this.getPoll(id);
-			Calendar curCal = currPoll.getTimeEnd();
-			Calendar now = Calendar.getInstance();
-			return curCal.before(now);
-		}
-		
-		public Boolean isEntityExpired(int id){
-			Entity currEntity = this.getEntity(id);
-			Calendar curCal = currEntity.getTimeEnd();
-			Calendar now = Calendar.getInstance();
-			return curCal.before(now);
-		}
+	public int getIds(){
+		return ids;
+	}//getIds()
+	
+	public int getCurrId(){
+		return ids;
+	}
+	
+	
+	public Boolean isPollExpired(int id){
+		Poll currPoll = this.getPoll(id);
+		Calendar curCal = currPoll.getTimeEnd();
+		Calendar now = Calendar.getInstance();
+		return curCal.before(now);
+	}
+	
+	public Boolean isEntityExpired(int id){
+		Entity currEntity = this.getEntity(id);
+		Calendar curCal = currEntity.getTimeEnd();
+		Calendar now = Calendar.getInstance();
+		return curCal.before(now);
+	}
 	
 }

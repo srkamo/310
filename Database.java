@@ -241,7 +241,7 @@ public class Database {
 					Boolean isUpVote = true;
 					
 					if(actionValue.equals("downVote")){
-						isUpVote = true;
+						isUpVote = false;
 					}
 					newAction = new RatingAction(isAnon, email, subjectID, isUpVote);
 				}//else
@@ -600,6 +600,7 @@ public class Database {
 		String tableName = "";
 		String idType = "";
 		int numViews = 0;
+		Timestamp timeEnd = null;
 		
 		if(subjectType.equals("Entity")){
 			tableName = "Entities";
@@ -612,13 +613,14 @@ public class Database {
 		
 		// get the numViews for the entity or poll
 		try {
-			ps = conn.prepareStatement("SELECT numViews "
+			ps = conn.prepareStatement("SELECT numViews, timeEnd "
 					+ "FROM " + tableName + " "
 					+ "WHERE " + idType + " = '" + subjectID + "';");
 
 			rs = ps.executeQuery();
 			rs.next();
 			numViews = rs.getInt("numViews");
+			timeEnd = rs.getTimestamp("timeEnd");
 		} catch (SQLException sqle) {
 			System.out.println("sqle in addNumView: " + sqle.getMessage());
 		}
@@ -628,7 +630,7 @@ public class Database {
 		// update the numViews
 		try {
 			ps = conn.prepareStatement("UPDATE " + tableName + " " 
-					+ "SET numViews = " + numViews + " "
+					+ "SET numViews = " + numViews + ", " + "timeEnd = '" + timeEnd + "' "
 					+ "WHERE " + idType + " = '" + subjectID + "';");
 			ps.execute();
 		} catch (SQLException sqle) {
@@ -636,6 +638,75 @@ public class Database {
 		}
 		
 	}//addNumView()
+	
+	
+	//adds 1 to the rating of an entity
+	public void upVoteEntity(int entityID){
+
+		int rating = 0;
+		Timestamp timeEnd = null;
+
+		
+		// get the numViews for the entity or poll
+		try {
+			ps = conn.prepareStatement("SELECT rating, timeEnd "
+					+ "FROM Entities "
+					+ "WHERE entityID = '" + entityID + "';");
+
+			rs = ps.executeQuery();
+			rs.next();
+			rating = rs.getInt("rating");
+			timeEnd = rs.getTimestamp("timeEnd");
+		} catch (SQLException sqle) {
+			System.out.println("sqle in upVoteEntity: " + sqle.getMessage());
+		}
+
+		rating++;
+
+		// update the numViews
+		try {
+			ps = conn.prepareStatement("UPDATE Entities " 
+					+ "SET rating = " + rating + ", " + "timeEnd = '" + timeEnd + "' "
+					+ "WHERE entityID = '" + entityID + "';");
+			ps.execute();
+		} catch (SQLException sqle) {
+			System.out.println("sqle in upVoteEntity: " + sqle.getMessage());
+		}
+	}//upVoteEntity()
+	
+	
+	//subtracts 1 from the rating of an entity
+	public void downVoteEntity(int entityID){
+		int rating = 0;
+		Timestamp timeEnd = null;
+
+		
+		// get the numViews for the entity or poll
+		try {
+			ps = conn.prepareStatement("SELECT rating, timeEnd "
+					+ "FROM Entities "
+					+ "WHERE entityID = '" + entityID + "';");
+
+			rs = ps.executeQuery();
+			rs.next();
+			rating = rs.getInt("rating");
+			timeEnd = rs.getTimestamp("timeEnd");
+		} catch (SQLException sqle) {
+			System.out.println("sqle in downVoteEntity: " + sqle.getMessage());
+		}
+
+		rating--;
+
+		// update the numViews
+		try {
+			ps = conn.prepareStatement("UPDATE Entities " 
+					+ "SET rating = " + rating + ", " + "timeEnd = '" + timeEnd + "' "
+					+ "WHERE entityID = '" + entityID + "';");
+			ps.execute();
+		} catch (SQLException sqle) {
+			System.out.println("sqle in downVoteEntity: " + sqle.getMessage());
+		}
+	}//downVoteEntity()
 	
 	
 	//returns a list of Polls which relate to the keyword passed
