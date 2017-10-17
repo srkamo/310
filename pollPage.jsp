@@ -7,6 +7,8 @@
 <%@ page import="java.util.HashMap" %>
 <%@page import="java.util.GregorianCalendar" %>
 <%@page import="java.util.Calendar" %>
+<%@ page import="Business.Action" %>
+<%@ page import="Business.CommentAction" %>
 
 
 
@@ -53,7 +55,11 @@
 	if(km.isPollExpired(subjectIDint)){ 
 		System.out.println("Poll is expired. time for JS");
 	}
+
 		Poll currPoll = (Poll) km.getPoll(subjectIDint);
+				
+		ArrayList<CommentAction> Comments = currPoll.getComments();
+		
 		String title = currPoll.getTitle(); 
 	    ArrayList<String> tags = currPoll.getTags(); 
 	    ArrayList<String> options = currPoll.getOptions(); 
@@ -62,11 +68,11 @@
 	    Calendar cal = currPoll.getTimeEnd();
 	    String timeEnd = cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.DATE);
 	    Boolean openForever = currPoll.isInfinite();
-	
 	    
-	  //error messages for rating an entity without being logged in
+	    //error messages for rating an entity without being logged in
 		String errorMessageVoteOnPoll = "";
 		errorMessageVoteOnPoll = (String) session.getAttribute("errorMessageVoteOnPoll"); 
+	    		session.setAttribute("errorMessageVoteOnPoll", "");
 		if(errorMessageVoteOnPoll == null){
 			errorMessageVoteOnPoll = ""; 
 		}
@@ -74,9 +80,11 @@
 		//error messages for commenting without being logged in
 		String errorMessageComment = "";
 		errorMessageComment = (String) session.getAttribute("errorMessageComment"); 
+		session.setAttribute("errorMessageVoteOnPoll", "");
 		if(errorMessageComment == null){
 			errorMessageComment = ""; 
 		}
+	
 %>
 <body>
 <div id="preloader">
@@ -103,8 +111,9 @@
                         <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create a Poll</button>
                         <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create a Rating</button>
                         <button class="navbar-btn nav-button wow fadeInRight search" onclick=" window.location='feed.jsp'" data-wow-delay="0.59s">Search</button>
+                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blog.html'" data-wow-delay="0.59s">Blog</button>
                         <button class="navbar-btn nav-button wow fadeInRight user" onclick=" window.location='userPage.jsp'" data-wow-delay="0.59s">User Profile</button>
-                        <button class="navbar-btn nav-button wow fadeInRight home" onclick=" window.location='servlets/logout.jsp'" data-wow-delay="0.59s">Logout</button>
+                        <button class="navbar-btn nav-button wow fadeInRight logout" onclick=" window.location='servlets/logout.jsp'" data-wow-delay="0.59s">Logout</button>
                     </div>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
@@ -127,9 +136,8 @@
             <div class="container">
             
            		<h2><center>POLL: <%= title %></center></h2>
-           		<h4 class="info-text"><center><%=errorMessageVoteOnPoll %></h4></center>
-	            	 
-	            	<h4 class="info-text"><center><%=errorMessageComment %></h4></center>
+           		<h4 class="info-text" style="color: red;"><center><%=errorMessageVoteOnPoll %></h4></center>
+           		<h4 class="info-text" style="color: red;"><center><%=errorMessageComment %></h4></center>
 	       		<br>
 	       		<div class="imagespot">
 					<center><img src="<%=image %>"/></center>
@@ -167,7 +175,18 @@
 						leave your comment anonymously: <input type="checkBox"  name="checkbox"></center>
 					</form>
 				</div>
-								
+						<h4><Center>Comments: </Center></h4>
+						
+						<%
+						for(int i = 0; i<Comments.size(); i++)
+						{
+							%>
+							<p><%=Comments.get(i).getUser() %>: <strong><%= Comments.get(i).getContent() %></strong></p>
+							
+							<%
+							
+						}
+						%>
 				<br>
 				<br>			
 								

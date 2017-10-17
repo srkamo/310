@@ -4,7 +4,10 @@
 <%@ page import="Business.KingManager" %>
 <%@ page import="Business.Entity" %>
 <%@ page import="java.util.ArrayList" %>
-
+<%@page import="java.util.GregorianCalendar" %>
+<%@page import="java.util.Calendar" %>
+<%@ page import="Business.Action" %>
+<%@ page import="Business.CommentAction" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -45,16 +48,27 @@
  		KingManager km  = (KingManager) session.getAttribute("kingManager");
 		String subjectID = request.getParameter("subjectID"); 
 		int subjectIDint = Integer.parseInt(subjectID); 
+
 		
+		if(km.isEntityExpired(subjectIDint)){
+			System.out.println("Entity is closed");
+			
+		}
 			Entity currEntity = (Entity) km.getEntity(subjectIDint);
 			String title = currEntity.getTitle(); 
-		    String description = currEntity.getDescription(); 
+		    String description = currEntity.getDescription();
+		    Calendar cal = currEntity.getTimeEnd();
+		    String timeEnd = cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.DATE);
+		    Boolean openForever = currEntity.isInfinite();
 		    ArrayList<String> tags = currEntity.getTags(); 
 		    int rating = currEntity.getRating(); 
 		    String image = currEntity.getImage(); 
 		    km.addEntityView(subjectIDint);
+		    int currVote = currEntity.getRating();
 		    
-			//error messages for rating an entity without being logged in
+			ArrayList<CommentAction> Comments = currEntity.getComments();
+		    
+		  	//error messages for rating an entity without being logged in
 			String errorMessageRateEntity = "";
 			errorMessageRateEntity = (String) session.getAttribute("errorMessageRateEntity"); 
 			if(errorMessageRateEntity == null){
@@ -67,8 +81,7 @@
 			if(errorMessageComment == null){
 				errorMessageComment = ""; 
 			}
-      	
-		
+
 	%>
 	<body>
 	<div id="preloader">
@@ -92,10 +105,12 @@
 	                <div class="collapse navbar-collapse yamm" id="navigation">
 	                    <div class="button navbar-right">
 	                    	<button class="navbar-btn nav-button wow bounceInRight login" onclick=" window.location='login.jsp'" data-wow-delay="0.45s">Login/Sign Up</button>
-                        	<button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create a Poll</button>
-                        	<button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create a Rating</button>
-                        	<button class="navbar-btn nav-button wow fadeInRight search" onclick=" window.location='feed.jsp'" data-wow-delay="0.59s">Search</button>
-                        	<button class="navbar-btn nav-button wow fadeInRight home" onclick=" window.location='servlets/logout.jsp'" data-wow-delay="0.59s">Logout</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create a Poll</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create a Rating</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight search" onclick=" window.location='feed.jsp'" data-wow-delay="0.59s">Search</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blog.html'" data-wow-delay="0.59s">Blog</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight user" onclick=" window.location='userPage.jsp'" data-wow-delay="0.59s">User Profile</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight logout" onclick=" window.location='servlets/logout.jsp'" data-wow-delay="0.59s">Logout</button>
 	                    </div>
 	                </div><!-- /.navbar-collapse -->
 	            </div><!-- /.container-fluid -->
@@ -116,20 +131,21 @@
 	        <!-- property area -->
 	        <div class="content-area single-property" style="background-color: #FCFCFC;">
 	            <div class="container">
-	            	<h2 ><center>POLL: <%= title %></center></h2>
-	            <h4 class="info-text"><center><%=errorMessageRateEntity %></h4></center>
+	            	<h2 ><center>RATING: <%= title %></center></h2>
+	            	<h4 class="info-text" style="color: red;"><center><%=errorMessageRateEntity %></h4></center>
 	            	 
-	            	<h4 class="info-text"><center><%=errorMessageComment %></h4></center>        
-					
+	            	<h4 class="info-text" style="color: red;"><center><%=errorMessageComment %></h4></center>   
 	               	<br>
 	            	<div class="imagespot">
 		  				<center><img src="<%=image %>"/></center>
 					</div>
 					
-					<h4 class="s-property-title"><center>Description</center></h4>
+					<h4><center>Description: </center></h4>
 					<p><center><%= description %></center></p>
-					
-				                    
+				
+				
+					<h4><center>What do you think?  Rate it! </center></h4>
+					<p><center>Thumbs up = love it, thumbs down = hate it.</center></p>
 					<center><div id="thumbs" style="width:400px">
 						<div id="thumbsupdiv" style="width:200px; float:left;">
 							<a href=<%="\" servlets/rateEntity.jsp?vote='upVote'&id=" + subjectIDint + "\""%> >
@@ -154,24 +170,57 @@
 					<br>
 					<br>
 					
+					<h4><center>Current Rating: <%= currVote %></center></h4>
+					<br>
+					
+					<h4><center>Leave a comment on this rating with your own opinions. </center></h4>
+					
 					<div id="form-div">
 						<form action="servlets/comment.jsp">
-							<textarea name="commentTextbox"></textarea>
+							<center><textarea name="commentTextbox" style="width:600px"></textarea></center>
 							<input type="hidden" name="id" value=<%=subjectIDint %>/>
 							<input type="hidden" name="subjectType" value="Entity"/>
-							<input type="submit" value="Add Comment">
-							Anonymous <input type="checkBox"  name="checkbox">
+							<center><input type="submit" value="Add Comment" style="width:600px"></center>
+							<center>Check this box if you would like to 
+							leave your comment anonymously: <input type="checkBox"  name="checkbox"></center>
 						</form>
 					</div>
+					<%
+						for(int i = 0; i<Comments.size(); i++)
+						{
+							%>
+							<p><%=Comments.get(i).getUser() %>: <strong><%= Comments.get(i).getContent() %></strong></p>
+							
+							<%
+							
+						}
+						%>
+					<br>
+					<br>
 					
-					<h4 class="tags">Tags</h4> 
-	                <ul>
+					<center><h4 class="tags">Tags: </h4>
 	                <%
-	                  	for (int i=0; i < tags.size(); i ++){
-	   	            		out.println("<li>"+tags.get(i)+"</li>"); 
+	                	for (int i=0; i < tags.size(); i ++){
+	   	           			out.print(tags.get(i)+", "); 
 	   	            	}
+	                %></center>
+	                
+	               	<br>
+					<br>
+	                
+	                <h4><center>Rating Lifespan: </center></h4>
+	                <%
+	                	String lifespan = "";  
+	                	if(openForever)
+	                	{
+	                		lifespan+=" forever";
+	                	} 
+	                	else
+	                	{
+	                		lifespan+=" until " + timeEnd; 
+	                	}
 	                %>
-	                </ul>
+	                <p><center>This rating will be open <%= lifespan %>.</center></p>
 	     		</div>
 			</div>
 	
