@@ -91,6 +91,12 @@ public class KingManager {
 	}
 	
 	
+	//returns true if user has already rated or voted
+	public Boolean userRatedOrVoted(int subjectID, String email){
+		return database.userRatedOrVoted(subjectID, email);
+	}
+	
+	
 /*----------------Database------------------------------- */
 	public User getUser(String email){
 		return database.getUser(email);

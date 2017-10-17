@@ -816,6 +816,36 @@ public class Database {
 	}//getNumThings()
 	
 	
+	//returns true if 
+	public Boolean userRatedOrVoted(int subjectID, String email){
+		Boolean userRatedOrVoted = false;
+		int userID = this.getUserID(email);
+		
+		try{
+			ps = conn.prepareStatement("SELECT type "
+					+ "FROM Activities "
+					+ "WHERE userID = " + userID + " "
+					+ "AND subjectID = " + subjectID + ";");
+			rs = ps.executeQuery();
+			
+			while(rs.next()){
+				String type = rs.getString("type");
+				if(type.equals("PollAction") || type.equals("RatingAction")){
+					userRatedOrVoted = true;
+					break;
+				}
+			}
+			
+		} catch(SQLException sqle){
+			System.out.println("sqle in getNumThings: " + sqle.getMessage());
+		} catch(ArithmeticException ae){
+			System.out.println("ae in getNumThings: " + ae.getMessage());
+		}
+		
+		return userRatedOrVoted;
+	}//userRatedOrVoted()
+	
+	
 	public static void main(String [] args){
 		Database db = new Database();
 		

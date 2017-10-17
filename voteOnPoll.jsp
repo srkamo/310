@@ -15,13 +15,40 @@
 		<%
 			KingManager km = (KingManager)session.getAttribute("kingManager");
 			User currUser = km.getCurUser();
+			String idStr=request.getParameter("id");
+			idStr=idStr.substring(0,idStr.length()-1);
+			int id = Integer.parseInt(idStr);
+			
+			if(km.getCurUser()==null)
+			{
+				String errorMessage = "You need to be logged in to rate this item."; 
+				session.setAttribute("errorMessageVoteOnPoll", errorMessage); 
+				response.sendRedirect("../pollPage.jsp?subjectID=" + id);				
+			}
+			
+			else if(km.isEntityExpired(id)){
+				String errorMessage = "This item is expired"; 
+				session.setAttribute("errorMessageVoteOnPoll", errorMessage); 
+				response.sendRedirect("../pollPage.jsp?subjectID=" + id);	
+			}
+			else if(km.userRatedOrVoted(id, currUser.getEmail())){
+				String errorMessage = "You have already voted on this poll"; 
+				session.setAttribute("errorMessageVoteOnPoll", errorMessage); 
+				response.sendRedirect("../pollPage.jsp?subjectID=" + id);	
+			}
+			
+			else{
 			String userEmail = currUser.getEmail();
-			int id = Integer.parseInt(request.getParameter("id"));
+			//int id = Integer.parseInt(request.getParameter("id"));
+			
+			
 			String choice = request.getParameter("vote");
 			
 			km.newVote(id, choice, true, userEmail);
 			session.setAttribute("kingManager", km);
-			response.sendRedirect("\" pollPage.jsp?subjectID=" + id + "\"");
+			
+			response.sendRedirect("../pollPage.jsp?subjectID=" + id);
+			}
 		%>
 	</body>
 </html>
