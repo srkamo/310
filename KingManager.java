@@ -84,7 +84,11 @@ public class KingManager {
 	}//getAllItemsDisplayed()
 	
 	
-	
+	//get the list of actions performed by the current user
+	public ArrayList<Action> getCurrUserActions(){
+		ArrayList<Action> userActions = database.getUserActions(curUser.getEmail());
+		return userActions;
+	}
 	
 	
 /*----------------Database------------------------------- */
@@ -110,14 +114,16 @@ public class KingManager {
 	
 	public void newRating(int entityID, Boolean upVote, String userEmail, Boolean isAnon) {
 		entityManager.newRating(entityID, upVote);
+		Action ratingAction = new RatingAction(isAnon, userEmail, entityID, upVote);
 		Action action = new Action(isAnon, userEmail, entityID);
-		database.addAction(action);
+		database.addAction(ratingAction);
 	}
 	
 	public void newEntityComment(int entityID, String userEmail, String newComment, Boolean isAnon) { 
 		entityManager.newComment(entityID, userEmail, newComment);
+		Action commentAction = new CommentAction(isAnon, userEmail, entityID, newComment);
 		Action action = new Action(isAnon, userEmail, entityID);
-		database.addAction(action);
+		database.addAction(commentAction);
 	}
 	
 	public void addEntityView(int entityID) {
@@ -144,14 +150,16 @@ public class KingManager {
 	
 	public void newVote(int pollID, String choice, Boolean isAnon, String userEmail) {
 		pollManager.newVote(pollID, choice);
+		Action pollAction = new PollAction(isAnon, userEmail, pollID, choice);
 		Action action = new Action(isAnon, userEmail, pollID);
-		database.addAction(action);
+		database.addAction(pollAction);
 	}
 	
 	public void newPollComment(int pollID, String userEmail, String newComment, Boolean isAnon) { 
 		pollManager.newComment(pollID, userEmail, newComment);
+		Action commentAction = new CommentAction(isAnon, userEmail, pollID, newComment);
 		Action action = new Action(isAnon, userEmail, pollID);
-		database.addAction(action);
+		database.addAction(commentAction);
 	}
 	
 	

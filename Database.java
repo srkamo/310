@@ -208,6 +208,57 @@ public class Database {
 	}//getUserID()
 	
 	
+	//returns a list of actions done by the user with email passed
+	public ArrayList<Action> getUserActions(String email){
+		ArrayList<Action> userActions = new ArrayList<Action>();
+		int userID = this.getUserID(email);
+		
+		try{
+			ps = conn.prepareStatement("SELECT isAnon, type, subjectID, actionValue "
+					+ "FROM Activities "
+					+ "WHERE userID = " + userID + ";");
+			rs = ps.executeQuery();
+			
+			while(rs.next()){
+				Boolean isAnon = rs.getBoolean("isAnon");
+				String type = rs.getString("type");
+				int subjectID = rs.getInt("subjectID");
+				String actionValue = rs.getString("actionValue");
+				
+				//create the action and add it to the list of actions
+				Action newAction;
+				
+				//comment action
+				if(type.equals("CommentAction")){
+					newAction = new CommentAction(isAnon, actionValue, subjectID, actionValue);
+				}
+				//pol action
+				else if(type.equals("PollAction")){
+					newAction = new PollAction(isAnon, email, subjectID, actionValue);
+				}
+				// RatingAction
+				else{
+					Boolean isUpVote = true;
+					
+					if(actionValue.equals("downVote")){
+						isUpVote = true;
+					}
+					newAction = new RatingAction(isAnon, email, subjectID, isUpVote);
+				}//else
+				
+				//add newAction to the list of actions
+				userActions.add(newAction);
+			}
+		} catch(SQLException sqle){
+			System.out.println("sqle in getEntities: " + sqle.getMessage());
+		} catch(ArithmeticException ae){
+			System.out.println("ae in getEntities: " + ae.getMessage());
+		}
+		
+		return userActions;
+	}//getUserActions()
+	
+	
 	//add the entity passed to the database
 	public void addEntity(Entity newEntity){
 		
