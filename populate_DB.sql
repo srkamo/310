@@ -3,16 +3,16 @@ INSERT INTO Users(fName, lName, email, password)
 VALUES("Bob", "Muller", "bmuller@usc.edu", "7c6a180b36896a0a8c02787eeafb0e4c");
 
 INSERT INTO Users(fName, lName, email, password)
-VALUES("Natalie", "Monger", "nmonger@usc.edu", "f1f16683f3e0208131b46d37a79c8921"); 
+VALUES("Natalie", "Monger", "nmonger@usc.edu", "6cb75f652a9b52798eb6cf2201057c73"); 
 
 INSERT INTO Users(fName, lName, email, password)
-VALUES("Morgan", "Bent", "mbent@usc.edu", "1349b4563dc7254f815c1c7609d39efe"); 
+VALUES("Morgan", "Bent", "mbent@usc.edu", "819b0643d6b89dc9b579fdfc9094f28e"); 
 
 INSERT INTO Users(fName, lName, email, password)
-VALUES("Peter" , "Tillman", "ptillman@usc.edu", "3bb8a650ecae07903d2dc68dc72c9a3c"); 
+VALUES("Peter" , "Tillman", "ptillman@usc.edu", "34cc93ece0ba9e3f6f235d4af979b16c"); 
 
 INSERT INTO Users(fName, lName, email, password)
-VALUES("Sebastian" , "Rinkema", "srinkema@usc.edu", "4b85107bcceddab21e05f262680d2b7f"); 
+VALUES("Sebastian" , "Rinkema", "srinkema@usc.edu", "db0edd04aaac4506f7edab03ac855d56"); 
 
 
 
