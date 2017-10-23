@@ -518,6 +518,9 @@ public class Database {
 				Timestamp endTimestamp = rs.getTimestamp("timeEnd");
 				Calendar timeEnd = timestampToCalendar(endTimestamp);
 				
+				System.out.println("timestamp: " + endTimestamp);
+				System.out.println("calendar " + timeEnd);
+				
 				
 				//create the poll and add it to the list of polls
 				Poll poll = new Poll(title, pollID, tags, options, numViews, comments, isInfinite, 
@@ -799,8 +802,16 @@ public class Database {
 		int numThings = 0;
 		
 		try{
-			ps = conn.prepareStatement("SELECT p.title, e.title "
-					+ "FROM Polls p, Entities e;");
+			ps = conn.prepareStatement("SELECT p.title "
+					+ "FROM Polls p;");
+			rs = ps.executeQuery();
+			
+			while(rs.next()){
+				numThings++;
+			}
+			
+			ps = conn.prepareStatement("SELECT e.title "
+					+ "FROM Entities e;");
 			rs = ps.executeQuery();
 			
 			while(rs.next()){
