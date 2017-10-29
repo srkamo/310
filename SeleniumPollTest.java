@@ -33,7 +33,7 @@ public class SeleniumPollTest {
 
 	
 	@Test 
-	public void loggedInPollVote() {
+	public void testLoggedInPollVote() {
 		WebDriver browser;   
 		System.setProperty("webdriver.gecko.driver","/Users/jasonwitherspoon/Desktop/geckodriver");    
 		
@@ -55,36 +55,6 @@ public class SeleniumPollTest {
 
     		WebElement submitVoteForm = browser.findElement(By.className("iradio_square-yellow"));
     	    submitVoteForm.submit(); 
-	}
-	
-	@Test 
-	public void testUserCanOnlyVoteOnce(){
-		WebDriver browser;   
-		System.setProperty("webdriver.gecko.driver","/Users/jasonwitherspoon/Desktop/geckodriver");    
-		
-		browser = new FirefoxDriver();    
-		browser.get("http://localhost:8080/KnowItAll/index.jsp");   
-		
-		browser.get("http://localhost:8080/KnowItAll/login.jsp"); 
-		
-    		WebElement signinform = browser.findElement(By.name("signinform"));
-    		WebElement usernameElement = browser.findElement(By.name("l_email"));
-		WebElement passwordElement = browser.findElement(By.name("l_password"));
-	
-		usernameElement.sendKeys("mbent@usc.edu");
-    		passwordElement.sendKeys("password3");
-	
-    		signinform.submit(); 
-    		
-    		browser.get("http://localhost:8080/KnowItAll/pollPage.jsp?subjectID=11"); 
-
-    		WebElement submitVoteForm = browser.findElement(By.className("iradio_square-yellow"));
-    	    submitVoteForm.submit();  
-    	    
-    		browser.get("http://localhost:8080/KnowItAll/pollPage.jsp?subjectID=11"); 
-
-    	    WebElement submitVoteForm2 = browser.findElement(By.className("iradio_square-yellow"));
-    	    submitVoteForm.submit();  
 	}
 
 }
