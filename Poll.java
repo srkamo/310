@@ -17,10 +17,11 @@ public class Poll {
 	private Calendar timeEnd; 
 	private String image; //this is new 
 	private HashMap<String, Integer> pollVotes;
+	private String creatorEmail;
 	
 	
 	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, 
-				Boolean isInfinite1, Calendar timeEnd1, String image1) {
+				Boolean isInfinite1, Calendar timeEnd1, String image1, String creatorEmail) {
 		title = title1; 
 		id = id1; 
 		tags = tags1; 		
@@ -31,6 +32,7 @@ public class Poll {
 		numViews = 0;
 		comments = new ArrayList<CommentAction>();
 		pollVotes = new HashMap<String, Integer>();
+		this.creatorEmail = creatorEmail;
 	}
 	
 	public Poll(String title1, int id1, ArrayList<String> tags1, ArrayList<String> options1, 
@@ -112,5 +114,8 @@ public class Poll {
 	}
 	public void addComment(CommentAction comment) { // this is new 
 		comments.add(comment);
+	}
+	public String getCreator(){
+		return creatorEmail;
 	}
 }

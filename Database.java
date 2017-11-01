@@ -114,7 +114,10 @@ public class Database {
 			String fName = rs.getString("fName");
 			String lName = rs.getString("lName");
 			
-			user = new User(email, password, fName, lName);
+			ArrayList<String> followers = getFollowers(email);
+			ArrayList<String> following = getFollowing(email);
+			
+			user = new User(email, password, fName, lName, followers, following);
 			
 		} catch(SQLException sqle){
 			System.out.println("sqle in getUser: " + sqle.getMessage());
@@ -163,6 +166,7 @@ public class Database {
 		else if(action instanceof PollAction){
 			actionType = "PollAction";
 			actionValue = ((PollAction) action).getOptionChosen();
+			newVote(actionValue);
 		}
 		//set action type to "RatingAction"
 		//and set action value to "upVote" if rating was upvote, "downVote" otherwise
@@ -186,6 +190,37 @@ public class Database {
 		}
 		
 	}//addAction()
+	
+	
+	//adds 1 to the count of votes in the Options table
+	private void newVote(String option){
+		int numVotes = 0;
+		
+		// get the numVotes for the option
+		try {
+			ps = conn.prepareStatement("SELECT numVotes "
+					+ "FROM Options "
+					+ "WHERE title = '" + option + "';");
+
+			rs = ps.executeQuery();
+			rs.next();
+			numVotes = rs.getInt("numVotes");
+		} catch (SQLException sqle) {
+			System.out.println("sqle in addVote: " + sqle.getMessage());
+		}
+
+		numVotes++;
+
+		// update the numViews
+		try {
+			ps = conn.prepareStatement("UPDATE Options " 
+					+ "SET numVotes = " + numVotes + " "
+					+ "WHERE title = '" + option + "';");
+			ps.execute();
+		} catch (SQLException sqle) {
+			System.out.println("sqle in addVote: " + sqle.getMessage());
+		}
+	}//newVote()
 	
 	
 	//returns the userID of the user with the full name passed
@@ -361,7 +396,6 @@ public class Database {
 				Timestamp endTimestamp = rs.getTimestamp("timeEnd");
 				Calendar timeEnd = timestampToCalendar(endTimestamp);
 				
-				
 				//create the entity and add it to the list of entities
 				Entity entity = new Entity(title, entityID, description, tags, rating, image, numViews, 
 						comments, isInfinite, timeEnd);
@@ -422,7 +456,7 @@ public class Database {
 					+ "FROM Activities a, Users u "
 					+ "WHERE subjectID = '" + id + "' "
 					+ "AND u.userID = a.userID "
-					+ "AND a.type = 'Comment';");
+					+ "AND a.type = 'CommentAction';");
 			r = p.executeQuery();
 			
 			while(r.next()){
@@ -857,104 +891,182 @@ public class Database {
 	}//userRatedOrVoted()
 	
 	
-	public static void main(String [] args){
-		Database db = new Database();
+	//add a new follower 
+	//follower is the person who is following someone
+	//following is the person that follower is follwing
+	public void newFollower(String follower, String following){
+		int followerID = getUserID(follower);
+		int followingID = getUserID(following);
 		
-		//test addUser
-		User newUser = new User("mbent@usc.edu", "password", "Morgan", "Bent");
-		db.addUser(newUser);
-		
-		//test getUser
-		User user = db.getUser("mbent@usc.edu");
-		System.out.println("Email: " + user.getEmail());
-		System.out.println("fName: " + user.getFName());
-		System.out.println("lName: " + user.getLName());
-		
-		//test addEntity
-		ArrayList<String> tags = new ArrayList<String>();
-		tags.add("yum");
-		Calendar calendar = Calendar.getInstance();
-		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity);
-		db.addNumView(1, "Entity");
-		db.addNumView(1, "Entity");
-		db.addNumView(1, "Entity");
-		db.addNumView(1, "Entity");
-		
-		
-		ArrayList<String> tags1 = new ArrayList<String>();
-		tags.add("yum");
-		Calendar cal = Calendar.getInstance();
-		Entity newEntity1 = new Entity("hello", 2, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity1);
-		db.addNumView(2, "Entity");
-		db.addNumView(2, "Entity");
-		
-		
-		Entity newEntity2 = new Entity("Morgan", 3, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity2);
-		db.addNumView(3, "Entity");
-		db.addNumView(3, "Entity");
-		db.addNumView(3, "Entity");
-		db.addNumView(3, "Entity");
-		db.addNumView(3, "Entity");
-		db.addNumView(3, "Entity");
-		db.addNumView(3, "Entity");
-		db.addNumView(3, "Entity");
-		
-		
-		Entity newEntity3 = new Entity("Sebastian", 4, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity3);
-		db.addNumView(4, "Entity");
-		db.addNumView(4, "Entity");
-		db.addNumView(4, "Entity");
-		db.addNumView(4, "Entity");
-		db.addNumView(4, "Entity");
-		db.addNumView(4, "Entity");
-		
-		
-		
-		Entity newEntity4 = new Entity("Natalie", 5, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity4);
-		db.addNumView(5, "Entity");
-		db.addNumView(5, "Entity");
-		db.addNumView(5, "Entity");
-		
-		Entity newEntity5 = new Entity("Natalie", 6, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity5);
-		db.addNumView(6, "Entity");
-		db.addNumView(6, "Entity");
-		db.addNumView(6, "Entity");
-		
-		Entity newEntity6 = new Entity("Natalie", 7, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity6);
-		db.addNumView(7, "Entity");
-		db.addNumView(7, "Entity");
-		db.addNumView(7, "Entity");
+		try{
+			ps = conn.prepareStatement("INSERT INTO Following(follower, following)"
+					+ "VALUES('" + followerID + "', '" + followingID + "')");
+			ps.execute();
+		} catch(SQLException sqle){
+			System.out.println("sqle in addUser: " + sqle.getMessage());
+		}
+	}//newFollower()
 	
-		Entity newEntity7 = new Entity("Natalie", 8, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity7);
-		db.addNumView(8, "Entity");
-		db.addNumView(8, "Entity");
-		db.addNumView(8, "Entity");
+	
+	//get the followers of the user with email passed
+	public ArrayList<String> getFollowers(String email){
+		ArrayList<String> followers = new ArrayList<String>();
 		
-		Entity newEntity8 = new Entity("Natalie", 9, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity8);
-		db.addNumView(9, "Entity");
-		db.addNumView(9, "Entity");
-		db.addNumView(9, "Entity");
+		//need new prepare statement and result set because this function will be called in
+		//the middle of parsing through global result set. If it used the same set, this 
+		//function would overwrite the results from the last call to the database
+		PreparedStatement p = null;
+		ResultSet r = null;
 		
-		Entity newEntity9 = new Entity("Natalie", 10, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity9);
-		db.addNumView(10, "Entity");
-		db.addNumView(10, "Entity");
-		db.addNumView(10, "Entity");
+		int userID = getUserID(email);
+
+		try {
+			p = conn.prepareStatement("SELECT u.username " 
+					+ "FROM Users u, Following f " 
+					+ "WHERE f.following = " + userID + " "
+					+ "AND f.follower = u.userID");
+			r = p.executeQuery();
+			while (r.next()) {
+				String follower = r.getString("email");
+				followers.add(follower);
+			}
+		} catch (SQLException sqle) {
+			System.out.println("sqle in getFollowers: " + sqle.getMessage());
+		}
+
+		return followers;
+	}//getFollowers()
+	
+	
+	// get user's following list
+	public ArrayList<String> getFollowing(String email) {
+		ArrayList<String> following = new ArrayList<String>();
 		
-		Entity newEntity10 = new Entity("Natalie", 11, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-		db.addEntity(newEntity10);
-		db.addNumView(11, "Entity");
-		db.addNumView(11, "Entity");
-		db.addNumView(11, "Entity");
+		//need new prepare statement and result set because this function will be called in
+		//the middle of parsing through global result set. If it used the same set, this 
+		//function would overwrite the results from the last call to the database
+		PreparedStatement p = null;
+		ResultSet r = null;
+		
+		int userID = getUserID(email);
+
+		try {
+			p = conn.prepareStatement("SELECT u.username " 
+					+ "FROM Users u, Following f " 
+					+ "WHERE f.follower = " + userID + " " 
+					+ "AND f.following = u.userID");
+			r = p.executeQuery();
+			while (r.next()) {
+				String uFollowing = r.getString("email");
+				following.add(uFollowing);
+			}
+		} catch (SQLException sqle) {
+			System.out.println("sqle in getUserFollowers: " + sqle.getMessage());
+		}
+
+		return following;
+	}// getUserFollowing()
+	
+	
+	
+	public static void main(String [] args){
+//		Database db = new Database();
+//		
+//		//test addUser
+//		User newUser = new User("mbent@usc.edu", "password", "Morgan", "Bent");
+//		db.addUser(newUser);
+//		
+//		//test getUser
+//		User user = db.getUser("mbent@usc.edu");
+//		System.out.println("Email: " + user.getEmail());
+//		System.out.println("fName: " + user.getFName());
+//		System.out.println("lName: " + user.getLName());
+//		
+//		//test addEntity
+//		ArrayList<String> tags = new ArrayList<String>();
+//		tags.add("yum");
+//		Calendar calendar = Calendar.getInstance();
+//		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity);
+//		db.addNumView(1, "Entity");
+//		db.addNumView(1, "Entity");
+//		db.addNumView(1, "Entity");
+//		db.addNumView(1, "Entity");
+//		
+//		
+//		ArrayList<String> tags1 = new ArrayList<String>();
+//		tags.add("yum");
+//		Calendar cal = Calendar.getInstance();
+//		Entity newEntity1 = new Entity("hello", 2, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity1);
+//		db.addNumView(2, "Entity");
+//		db.addNumView(2, "Entity");
+//		
+//		
+//		Entity newEntity2 = new Entity("Morgan", 3, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity2);
+//		db.addNumView(3, "Entity");
+//		db.addNumView(3, "Entity");
+//		db.addNumView(3, "Entity");
+//		db.addNumView(3, "Entity");
+//		db.addNumView(3, "Entity");
+//		db.addNumView(3, "Entity");
+//		db.addNumView(3, "Entity");
+//		db.addNumView(3, "Entity");
+//		
+//		
+//		Entity newEntity3 = new Entity("Sebastian", 4, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity3);
+//		db.addNumView(4, "Entity");
+//		db.addNumView(4, "Entity");
+//		db.addNumView(4, "Entity");
+//		db.addNumView(4, "Entity");
+//		db.addNumView(4, "Entity");
+//		db.addNumView(4, "Entity");
+//		
+//		
+//		
+//		Entity newEntity4 = new Entity("Natalie", 5, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity4);
+//		db.addNumView(5, "Entity");
+//		db.addNumView(5, "Entity");
+//		db.addNumView(5, "Entity");
+//		
+//		Entity newEntity5 = new Entity("Natalie", 6, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity5);
+//		db.addNumView(6, "Entity");
+//		db.addNumView(6, "Entity");
+//		db.addNumView(6, "Entity");
+//		
+//		Entity newEntity6 = new Entity("Natalie", 7, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity6);
+//		db.addNumView(7, "Entity");
+//		db.addNumView(7, "Entity");
+//		db.addNumView(7, "Entity");
+//	
+//		Entity newEntity7 = new Entity("Natalie", 8, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity7);
+//		db.addNumView(8, "Entity");
+//		db.addNumView(8, "Entity");
+//		db.addNumView(8, "Entity");
+//		
+//		Entity newEntity8 = new Entity("Natalie", 9, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity8);
+//		db.addNumView(9, "Entity");
+//		db.addNumView(9, "Entity");
+//		db.addNumView(9, "Entity");
+//		
+//		Entity newEntity9 = new Entity("Natalie", 10, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity9);
+//		db.addNumView(10, "Entity");
+//		db.addNumView(10, "Entity");
+//		db.addNumView(10, "Entity");
+//		
+//		Entity newEntity10 = new Entity("Natalie", 11, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
+//		db.addEntity(newEntity10);
+//		db.addNumView(11, "Entity");
+//		db.addNumView(11, "Entity");
+//		db.addNumView(11, "Entity");
 		
 	
 		
@@ -984,8 +1096,8 @@ public class Database {
 //		db.addPoll(newPoll);
 		
 		//ArrayList<Poll> allPolls = db.getPolls();
-		ArrayList<Poll> search = db.searchForPolls("my");
-		System.out.println(search.size());
+//		ArrayList<Poll> search = db.searchForPolls("my");
+//		System.out.println(search.size());
 
 	}//main
 }

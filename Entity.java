@@ -1,3 +1,5 @@
+package Business;
+
 import java.util.Calendar;
 import java.util.ArrayList;
 
@@ -13,9 +15,11 @@ public class Entity {
 	private ArrayList<CommentAction> comments; 
 	private Boolean isInfinite; 
 	private Calendar timeEnd; 
+	private String creatorEmail;
 	
 	// Entity Constructor
-	public Entity(String title1, int id1, String description1, ArrayList<String> tags1, Boolean isInfinite1, Calendar timeEnd1, String image1) {
+	public Entity(String title1, int id1, String description1, ArrayList<String> tags1, 
+			Boolean isInfinite1, Calendar timeEnd1, String image1, String creatorEmail) {
 		title = title1; 
 		id = id1; 
 		description = description1;
@@ -24,6 +28,7 @@ public class Entity {
 		timeEnd = timeEnd1; // does this work? -> can Calendars be copied like this?
 		image = image1; 
 		numViews = 0; 
+		this.creatorEmail = creatorEmail;
 	}
 	
 	
@@ -123,6 +128,9 @@ public class Entity {
 	}
 	public void addComment(CommentAction comment) { // this is new 
 		comments.add(comment);
+	}
+	public String getCreator(){
+		return creatorEmail;
 	}
 
 }
