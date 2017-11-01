@@ -29,7 +29,9 @@ CREATE TABLE Polls(
     image VARCHAR(200) NOT NULL,
     numViews INT(11) NOT NULL,
     isInfinite bool NOT NULL,
-    timeEnd timestamp NOT NULL
+    timeEnd timestamp NOT NULL,
+    creatorID INT(11) NOT NULL,
+	FOREIGN KEY fk1(creatorID) REFERENCES Users(userID)
 );
 
 CREATE TABLE Options(
@@ -48,7 +50,9 @@ CREATE TABLE Entities(
     image VARCHAR(200) NOT NULL,
     numViews INT(11) NOT NULL,
     isInfinite bool NOT NULL,
-    timeEnd timestamp NOT NULL
+    timeEnd timestamp NOT NULL,
+    creatorID INT(11) NOT NULL,
+	FOREIGN KEY fk1(creatorID) REFERENCES Users(userID)
 );
     
 CREATE TABLE PollTags(
@@ -63,4 +67,12 @@ CREATE TABLE EntityTags(
     entityID INT(11) NOT NULL,
     title VARCHAR(50) NOT NULL,
     FOREIGN KEY fk1(entityID) REFERENCES Entities(entityID)
+);
+
+CREATE TABLE Following(
+	followingID INT(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    follower INT(11) NOT NULL,
+    following INT(11) NOT NULL,
+    FOREIGN KEY fk1(follower) REFERENCES Users(userID),
+    FOREIGN KEY fk2(following) REFERENCES Users(userID)
 );
