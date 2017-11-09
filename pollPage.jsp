@@ -51,11 +51,11 @@
 	KingManager km  = (KingManager) session.getAttribute("kingManager");
 	String subjectID = request.getParameter("subjectID"); 
 	int subjectIDint = Integer.parseInt(subjectID);
+	km.addPollView(subjectIDint);
 	
 	if(km.isPollExpired(subjectIDint)){ 
 		System.out.println("Poll is expired. time for JS");
 	}
-
 		Poll currPoll = (Poll) km.getPoll(subjectIDint);
 				
 		ArrayList<CommentAction> Comments = currPoll.getComments();
@@ -68,6 +68,7 @@
 	    Calendar cal = currPoll.getTimeEnd();
 	    String timeEnd = cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.DATE);
 	    Boolean openForever = currPoll.isInfinite();
+	    String creator = currPoll.getCreator();
 	    
 	    //error messages for rating an entity without being logged in
 		String errorMessageVoteOnPoll = "";
@@ -80,7 +81,7 @@
 		//error messages for commenting without being logged in
 		String errorMessageComment = "";
 		errorMessageComment = (String) session.getAttribute("errorMessageComment"); 
-		session.setAttribute("errorMessageVoteOnPoll", "");
+		session.setAttribute("errorMessageComment", "");
 		if(errorMessageComment == null){
 			errorMessageComment = ""; 
 		}
@@ -136,8 +137,8 @@
             <div class="container">
             
            		<h2><center>POLL: <%= title %></center></h2>
-           		<h4 class="info-text" style="color: red;"><center><%=errorMessageVoteOnPoll %></h4></center>
-           		<h4 class="info-text" style="color: red;"><center><%=errorMessageComment %></h4></center>
+           		<h4 class="info-text" style="color: red;" id="errorMessageVoteOnPoll"><center><%=errorMessageVoteOnPoll %></h4></center>
+           		<h4 class="info-text" style="color: red;" id="errorMessageComment"><center><%=errorMessageComment %></h4></center>
 	       		<br>
 	       		<div class="imagespot">
 					<center><img src="<%=image %>"/></center>
@@ -147,7 +148,7 @@
 				<p><center>Select the option you most agree with, and then click submit. </center></p>
 				
 				
-				<center><form action="servlets/voteOnPoll.jsp">
+				<center><form action="servlets/voteOnPoll.jsp" name="submitVoteForm">
                 	<%
                     for(int i=0; i<options.size(); i++){
            	    		String option = options.get(i);
@@ -160,7 +161,7 @@
                     <input type="submit" value="Submit" style="width:600px">
 				</form></center>
 				
-				<h4><center>Current Scores: <%= results %></center></h4>
+				<h4 id="scores"><center>Current Scores: <%= results %></center></h4>
 				<br>
 					
 				<h4><center>Leave a comment on this poll with your own opinions. </center></h4>
@@ -178,13 +179,21 @@
 						<h4><Center>Comments: </Center></h4>
 						
 						<%
-						for(int i = 0; i<Comments.size(); i++)
-						{
-							%>
-							<p><%=Comments.get(i).getUser() %>: <strong><%= Comments.get(i).getContent() %></strong></p>
-							
-							<%
-							
+						for(int i = 0; i<Comments.size(); i++){
+							//comment not anon
+							if(!Comments.get(i).getIsAnon()){
+								%>
+								<p id="comment"><a href=<%="\" publicUserPage.jsp?email=" + Comments.get(i).getUser() + "\""%> ><%=Comments.get(i).getUser() %></a>: <strong><%= Comments.get(i).getContent() %></strong></p>
+								
+								<%
+							}
+							//comment anonymous
+							else{
+								%>
+								<p id="comment">Anonymous: <strong><%= Comments.get(i).getContent() %></strong></p>
+								
+								<%
+							}
 						}
 						%>
 				<br>
@@ -213,7 +222,7 @@
 	            <br>
 				<br>
 				
-				<h4><center>Poll Lifespan: </center></h4>
+				<h4 id="lifespan"><center>Poll Lifespan: </center></h4>
 	                <%
 	                	String lifespan = "";  
 	                	if(openForever)
@@ -226,6 +235,12 @@
 	                	}
 	                %>
 	            <p><center>This poll will be open <%= lifespan %>.</center></p>
+	            
+	            <br>
+				<br>
+				
+				<h4 id="creator"><center>Created by: <a href=<%="\" publicUserPage.jsp?email=" + creator + "\""%> ><%= creator %></a></center></h4>
+				<h4 id="editPoll"><center><a href=<%="\" createPollPage.jsp?pollID=" + currPoll.getID() + "\""%> >Edit Poll</a></center></h4>
 				
 			</div>
 		</div>         
@@ -247,7 +262,6 @@
 
         <script>
                             $(document).ready(function () {
-
                                 $('#image-gallery').lightSlider({
                                     gallery: true,
                                     item: 1,
