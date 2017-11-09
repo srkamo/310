@@ -45,7 +45,7 @@ public class Database {
 		String ipaddress = "127.0.0.1";
 		String dbName = "knowItAll";
 		String user = "root";
-		String password = "JW96wctw!";
+		String password = "root!";
 		
 		//parse the sql source file
 		try{
