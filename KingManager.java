@@ -87,10 +87,21 @@ public class KingManager {
 		return userActions;
 	}
 	
+	//get the list of actions performed by the user passed
+	public ArrayList<Action> getUserActions(String email){
+		ArrayList<Action> userActions = database.getUserActions(email);
+		return userActions;
+	}
+	
 	
 	//returns true if user has already rated or voted
 	public Boolean userRatedOrVoted(int subjectID, String email){
-		return database.userRatedOrVoted(subjectID, email);
+		if (database.userRatedOrVoted(subjectID, email) != null) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
 	
@@ -102,6 +113,17 @@ public class KingManager {
 	public void addUser(User newUser){
 		database.addUser(newUser);
 	}	
+	
+	public void editComment(int subjectID, String oldComment, String newComment){
+		database.editCommment(subjectID, oldComment, newComment);
+		pollManager.setPollList(database.getPolls());
+		entityManager.setEntityList(database.getEntities());
+	}
+	
+	public void editRating(int subjectID, String email){
+		database.editRating(subjectID, email);
+		entityManager.setEntityList(database.getEntities());
+	}
 
 /*----------------EntityManager------------------------------- */
 	public Entity getEntity(int entityID){
@@ -111,7 +133,8 @@ public class KingManager {
 	public void addEntity(Entity newEntity){
 		database.addEntity(newEntity);
 		allItemsDisplayed.add(newEntity);
-		entityManager.addEntity(newEntity);
+		//entityManager.addEntity(newEntity);
+		entityManager.setEntityList(database.getEntities());
 		ids++;
 	}
 	
@@ -151,7 +174,8 @@ public class KingManager {
 	public void addPoll(Poll newPoll){
 		database.addPoll(newPoll);
 		allItemsDisplayed.add(newPoll);
-		pollManager.addPoll(newPoll);
+		//pollManager.addPoll(newPoll);
+		pollManager.setPollList(database.getPolls());
 		ids++;
 	}
 	
@@ -200,21 +224,25 @@ public class KingManager {
 	}
 	
 	public void followUser(String userToFollow) {
-		User currUser = this.getCurUser();
 		User toFollow = this.getUser(userToFollow); 
-		database.newFollower(currUser.getEmail(), userToFollow);
+		database.newFollower(curUser.getEmail(), userToFollow);
+		curUser = database.getUser(curUser.getEmail());
 	}
 	
 	public Boolean alreadyFollows(String userToFollow) {
-		User currUser = this.getCurUser();
 		User toFollow = this.getUser(userToFollow); 
 		Boolean doesFollow = false; 
 		
-		if (currUser.getFollowing().contains(toFollow.getEmail())) {
+		if (curUser.getFollowing().contains(userToFollow)) {
 			doesFollow = true; 
 		}
 		
 		return doesFollow;
 	}
+	
+	public void unfollowUser(String userToUnfollow) {
+		User toUnfollow = this.getUser(userToUnfollow); 
+		database.unfollow(curUser.getEmail(), userToUnfollow);
+	}	
 	
 }
