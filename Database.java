@@ -1038,16 +1038,19 @@ public class Database {
 	//update the rating of an entity
 	private void updateRating(int subjectID, Boolean upVote){
 		int rating = 0;
+		Timestamp timeEnd = null;
+		System.out.println("update rating timeEnd: " + timeEnd);
 		
 		// get the current rating for the entity
 		try {
-			ps = conn.prepareStatement("SELECT rating "
+			ps = conn.prepareStatement("SELECT rating, timeEnd "
 					+ "FROM Entities "
 					+ "WHERE entityID = '" + subjectID + "';");
 
 			rs = ps.executeQuery();
 			rs.next();
 			rating = rs.getInt("rating");
+			timeEnd = rs.getTimestamp("timeEnd");
 		} catch (SQLException sqle) {
 			System.out.println("sqle in updateRating: " + sqle.getMessage());
 		}
@@ -1062,10 +1065,10 @@ public class Database {
 			rating -= 2;
 		}
 
-		// update the numViews
+		// update the rating
 		try {
 			ps = conn.prepareStatement("UPDATE Entities " 
-					+ "SET rating = " + rating + " "
+					+ "SET timeEnd = " + timeEnd + ", " + "rating = '" + rating + "' "
 					+ "WHERE entityID = '" + subjectID + "';");
 			ps.execute();
 		} catch (SQLException sqle) {
