@@ -31,6 +31,7 @@ CREATE TABLE Polls(
     isInfinite bool NOT NULL,
     timeEnd timestamp NOT NULL,
     creatorID INT(11) NOT NULL,
+    anonCreator bool NOT NULL,
 	FOREIGN KEY fk1(creatorID) REFERENCES Users(userID)
 );
 
@@ -52,6 +53,7 @@ CREATE TABLE Entities(
     isInfinite bool NOT NULL,
     timeEnd timestamp NOT NULL,
     creatorID INT(11) NOT NULL,
+    anonCreator bool NOT NULL,
 	FOREIGN KEY fk1(creatorID) REFERENCES Users(userID)
 );
     
@@ -75,4 +77,15 @@ CREATE TABLE Following(
     following INT(11) NOT NULL,
     FOREIGN KEY fk1(follower) REFERENCES Users(userID),
     FOREIGN KEY fk2(following) REFERENCES Users(userID)
+);
+
+CREATE TABLE Blogs(
+	blogID INT(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    creatorID INT(11) NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(200) NOT NULL,
+    image VARCHAR(200) NOT NULL,
+    content LONGTEXT NOT NULL,
+    dateCreated VARCHAR(15) NOT NULL,
+     FOREIGN KEY fk1(creatorID) REFERENCES Users(userID)
 );
