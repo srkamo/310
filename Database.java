@@ -1068,7 +1068,7 @@ public class Database {
 		// update the rating
 		try {
 			ps = conn.prepareStatement("UPDATE Entities " 
-					+ "SET timeEnd = " + timeEnd + ", " + "rating = '" + rating + "' "
+					+ "SET timeEnd = '" + timeEnd + "', " + "rating = '" + rating + "' "
 					+ "WHERE entityID = '" + subjectID + "';");
 			ps.execute();
 		} catch (SQLException sqle) {

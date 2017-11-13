@@ -4,13 +4,15 @@
 <%@page import="Business.KingManager" %>
 <%@page import="Business.Entity" %>
 <%@page import="Business.User" %>
+<%@page import="Business.Action" %>
+<%@page import="Business.RatingAction" %>
 <%@page import="java.util.ArrayList" %>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Insert title here</title>
 	</head>
-	<body>
+	<body> 
 	
 		<%
 			KingManager km = (KingManager)session.getAttribute("kingManager");
@@ -18,6 +20,12 @@
 						
 			int id = Integer.parseInt(request.getParameter("id"));
 			User currUser = km.getCurUser();
+			
+			Action userRatedOrVoted = null;
+			
+			if(currUser != null){
+				userRatedOrVoted = km.userRatedOrVoted(id, currUser.getEmail());
+			}
 			
 			//error message for if user is not logged in
 			if(km.getCurUser()==null)
@@ -27,18 +35,40 @@
 				response.sendRedirect("../entityPage.jsp?subjectID=" + id);				
 			}
 			
-			else if(km.isEntityExpired(id)){
+			else if(km.isEntityExpired(id) && !km.getEntity(id).isInfinite()){
 				String errorMessage = "This item is expired."; 
 				session.setAttribute("errorMessageRateEntity", errorMessage); 
 				response.sendRedirect("../entityPage.jsp?subjectID=" + id);	
 			}
-			else if(km.userRatedOrVoted(id, currUser.getEmail())){
-				String errorMessage = "You have already rated this entity."; 
+			//user already rated, change rating value
+			else if((userRatedOrVoted != null) && (userRatedOrVoted instanceof RatingAction)){
+				RatingAction rAction = (RatingAction)userRatedOrVoted;
+				String errorMessage = "";
+				Boolean upVote = false;
+				if(vote.equals("\'upVote\'")){ upVote = true; }
+				
+				//if user already upvoted and is trying to upvote again
+				if(upVote && rAction.isUpVote()){
+					errorMessage = "You have already upvoted this item.";
+				}
+				//if user has already downvoted and is trying to downvote again
+				else if(!upVote && !rAction.isUpVote()){
+					errorMessage = "You have already downvoted this item.";
+				}
+				
+				//else user wants to change their vote
+				else{
+					errorMessage = "You have changed your rating on this entity."; 
+					km.editRating(id, currUser.getEmail());
+				}
+				
+				
 				session.setAttribute("errorMessageRateEntity", errorMessage); 
 				response.sendRedirect("../entityPage.jsp?subjectID=" + id);	
 			}
-			else
-			{
+			
+			//user has not yet rated the item
+			else{
 			String errorMessage = ""; 
 			session.setAttribute("errorMessageRateEntity", errorMessage); 
 			String userEmail = currUser.getEmail();
