@@ -56,6 +56,7 @@
 	if(km.isPollExpired(subjectIDint)){ 
 		System.out.println("Poll is expired. time for JS");
 	}
+
 		Poll currPoll = (Poll) km.getPoll(subjectIDint);
 				
 		ArrayList<CommentAction> Comments = currPoll.getComments();
@@ -66,9 +67,12 @@
 	    HashMap<String,Integer> results = currPoll.getPollResults(); 
 	    String image = currPoll.getImage(); 
 	    Calendar cal = currPoll.getTimeEnd();
-	    String timeEnd = cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.DATE);
+	    int month=cal.get(Calendar.MONTH)+1;
+	    String timeEnd = month + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.YEAR);
 	    Boolean openForever = currPoll.isInfinite();
 	    String creator = currPoll.getCreator();
+	    Boolean creatorIsAnon = currPoll.creatorIsAnon();
+
 	    
 	    //error messages for rating an entity without being logged in
 		String errorMessageVoteOnPoll = "";
@@ -109,10 +113,11 @@
                 <div class="collapse navbar-collapse yamm" id="navigation">
                     <div class="button navbar-right">
                         <button class="navbar-btn nav-button wow bounceInRight login" onclick=" window.location='login.jsp'" data-wow-delay="0.45s">Login/Sign Up</button>
-                        <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create a Poll</button>
-                        <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create a Rating</button>
+                        <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create Poll</button>
+                        <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create Rating</button>
+                        <button class="navbar-btn nav-button wow fadeInRight create-blog" onclick=" window.location='createBlogPage.jsp'" data-wow-delay="0.54s">Create Blog</button>
                         <button class="navbar-btn nav-button wow fadeInRight search" onclick=" window.location='feed.jsp'" data-wow-delay="0.59s">Search</button>
-                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blog.html'" data-wow-delay="0.59s">Blog</button>
+                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blogFeed.jsp'" data-wow-delay="0.59s">Blog</button>
                         <button class="navbar-btn nav-button wow fadeInRight user" onclick=" window.location='userPage.jsp'" data-wow-delay="0.59s">User Profile</button>
                         <button class="navbar-btn nav-button wow fadeInRight logout" onclick=" window.location='servlets/logout.jsp'" data-wow-delay="0.59s">Logout</button>
                     </div>
@@ -180,6 +185,17 @@
 						
 						<%
 						for(int i = 0; i<Comments.size(); i++){
+							// edit comment
+							if(km.getCurUser() != null){
+								if(km.getCurUser().getEmail().equalsIgnoreCase( Comments.get(i).getUser())){
+									%>
+										<p id="comment"> <a href=<%="\" editCommentPoll.jsp?subjectID=" + Comments.get(i).getSubjectID()  + "&curComment=" + Comments.get(i).getContent() + "\""%> >Edit</a>
+									<% 
+								}
+				
+							}
+							
+							
 							//comment not anon
 							if(!Comments.get(i).getIsAnon()){
 								%>
@@ -236,11 +252,30 @@
 	                %>
 	            <p><center>This poll will be open <%= lifespan %>.</center></p>
 	            
+	            <%
+	            	//only display delete button if curr user is the creator of the poll
+	            	if(km.getCurUser() != null){
+	            	if(creator.equals(km.getCurUser().getEmail())){
+	            %>		
+	            		<a href=<%="\" servlets/deletePollEntity.jsp?type=poll&subjectID=" + subjectIDint + "\""%> >
+            				<center><button style="width:200px; "height=200px;">Delete Poll</button></center>
+            			</a>
+	            <% 		
+	            	}
+	            	}
+	            %>
+	            
+	            
 	            <br>
 				<br>
-				
-				<h4 id="creator"><center>Created by: <a href=<%="\" publicUserPage.jsp?email=" + creator + "\""%> ><%= creator %></a></center></h4>
-				<h4 id="editPoll"><center><a href=<%="\" createPollPage.jsp?pollID=" + currPoll.getID() + "\""%> >Edit Poll</a></center></h4>
+				<%
+				if(creatorIsAnon == false){ %>
+					<h4 id="creator"><center>Created by: <a href=<%="\" publicUserPage.jsp?email=" + creator + "\""%> ><%= creator %></a></center></h4>
+				<%} 
+				else {
+					%><h4 id="creator"><center>Created by: Anonymous</center></h4>
+				<%}
+				%>
 				
 			</div>
 		</div>         
@@ -262,6 +297,7 @@
 
         <script>
                             $(document).ready(function () {
+
                                 $('#image-gallery').lightSlider({
                                     gallery: true,
                                     item: 1,

@@ -48,7 +48,6 @@
  		KingManager km  = (KingManager) session.getAttribute("kingManager");
 		String subjectID = request.getParameter("subjectID"); 
 		int subjectIDint = Integer.parseInt(subjectID); 
-
 		
 		if(km.isEntityExpired(subjectIDint)){
 			System.out.println("Entity is closed");
@@ -58,13 +57,15 @@
 			String title = currEntity.getTitle(); 
 		    String description = currEntity.getDescription();
 		    Calendar cal = currEntity.getTimeEnd();
-		    String timeEnd = cal.get(Calendar.MONTH) + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.DATE);
+		    int month=cal.get(Calendar.MONTH)+1;
+		    String timeEnd = month + "/" + cal.get(Calendar.DATE) + "/" +cal.get(Calendar.YEAR);
 		    Boolean openForever = currEntity.isInfinite();
 		    ArrayList<String> tags = currEntity.getTags(); 
 		    int rating = currEntity.getRating(); 
 		    String image = currEntity.getImage(); 
 		    km.addEntityView(subjectIDint);
 		    int currVote = currEntity.getRating();
+		    String creator = currEntity.getCreator();
 		    
 			ArrayList<CommentAction> Comments = currEntity.getComments();
 		    
@@ -81,7 +82,9 @@
 			if(errorMessageComment == null){
 				errorMessageComment = ""; 
 			}
-
+			//reset error messages
+			session.setAttribute("errorMessageRateEntity", "");
+			session.setAttribute("errorMessageComment", "");
 	%>
 	<body>
 	<div id="preloader">
@@ -105,10 +108,11 @@
 	                <div class="collapse navbar-collapse yamm" id="navigation">
 	                    <div class="button navbar-right">
 	                    	<button class="navbar-btn nav-button wow bounceInRight login" onclick=" window.location='login.jsp'" data-wow-delay="0.45s">Login/Sign Up</button>
-	                        <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create a Poll</button>
-	                        <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create a Rating</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create Poll</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create Rating</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight create-blog" onclick=" window.location='createBlogPage.jsp'" data-wow-delay="0.54s">Create Blog</button>
 	                        <button class="navbar-btn nav-button wow fadeInRight search" onclick=" window.location='feed.jsp'" data-wow-delay="0.59s">Search</button>
-	                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blog.html'" data-wow-delay="0.59s">Blog</button>
+	                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blogFeed.jsp'" data-wow-delay="0.59s">Blog</button>
 	                        <button class="navbar-btn nav-button wow fadeInRight user" onclick=" window.location='userPage.jsp'" data-wow-delay="0.59s">User Profile</button>
 	                        <button class="navbar-btn nav-button wow fadeInRight logout" onclick=" window.location='servlets/logout.jsp'" data-wow-delay="0.59s">Logout</button>
 	                    </div>
@@ -170,7 +174,7 @@
 					<br>
 					<br>
 					
-					<h4><center>Current Rating: <%= currVote %></center></h4>
+					<h4 id="rating"><center>Current Rating: <%= currVote %></center></h4>
 					<br>
 					
 					<h4><center>Leave a comment on this rating with your own opinions. </center></h4>
@@ -188,11 +192,30 @@
 					<%
 						for(int i = 0; i<Comments.size(); i++)
 						{
-							%>
-							<p><%=Comments.get(i).getUser() %>: <strong><%= Comments.get(i).getContent() %></strong></p>
+							// edit comment
+							if(km.getCurUser() != null){
+								if(km.getCurUser().getEmail().equalsIgnoreCase( Comments.get(i).getUser())){
+									%>
+										<p id="comment"> <a href=<%="\" editComment.jsp?subjectID=" + Comments.get(i).getSubjectID()  + "&curComment=" + Comments.get(i).getContent() + "\""%> >Edit</a>
+									<% 
+								}
+				
+							}
 							
-							<%
-							
+							//comment is not anonymous
+							if(!Comments.get(i).getIsAnon()){
+								%>
+								<a href=<%="\" publicUserPage.jsp?email=" + Comments.get(i).getUser() + "\""%> ><%=Comments.get(i).getUser() %></a>: <strong><%= Comments.get(i).getContent() %></strong></p>
+								
+								<%
+							}
+							//comment is anonymous   <p id="comment">
+							else{
+								%>
+								Anonymous: <strong><%= Comments.get(i).getContent() %></strong></p>
+								
+								<%
+							}
 						}
 						%>
 					<br>
@@ -208,7 +231,7 @@
 	               	<br>
 					<br>
 	                
-	                <h4><center>Rating Lifespan: </center></h4>
+	                <h4 id="lifespan"><center>Rating Lifespan: </center></h4>
 	                <%
 	                	String lifespan = "";  
 	                	if(openForever)
@@ -221,6 +244,26 @@
 	                	}
 	                %>
 	                <p><center>This rating will be open <%= lifespan %>.</center></p>
+	                
+	                
+	                <%
+		            	//only display delete button if curr user is the creator of the entity
+		            	if(km.getCurUser() != null){
+		            	if(creator.equals(km.getCurUser().getEmail())){
+	            	%>
+	                
+			                <a href=<%="\" servlets/deletePollEntity.jsp?type=entity&subjectID=" + subjectIDint + "\""%> >
+		            			<center><button style="width:200px; "height=200px;">Delete Entity</button></center>
+		            		</a>
+		             <% 		
+	            		}
+		            	}
+	            	%>
+	                
+	                <br>
+	                <br>
+	                
+	                <h4 id="creator"><center>Created by: <a href=<%="\" publicUserPage.jsp?email=" + creator + "\""%> ><%= creator %></a></center></h4>
 	     		</div>
 			</div>
 	
