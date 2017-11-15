@@ -24,11 +24,11 @@
 		
 			}//if user not logged in 
 			// if current user doesn't already follow the other user 
-						else if (!km.alreadyFollows(toUnfollow)){
-							System.out.println("You don't yet follow this user."); 
-							String errorMessage = "You don't yet follow this user.";
-							session.setAttribute("errorMessageFollow", errorMessage);
-						}// if current user already follows the other user 
+			else if (!km.alreadyFollows(toUnfollow)){
+				System.out.println("You don't yet follow this user."); 
+				String errorMessage = "You don't yet follow this user.";
+				session.setAttribute("errorMessageFollow", errorMessage);
+			}// if current user already follows the other user 
 						
 			else{
 				km.unfollowUser(toUnfollow);

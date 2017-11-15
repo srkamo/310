@@ -21,13 +21,7 @@ import java.util.HashMap;
 import java.sql.Timestamp;
 import java.util.Vector;
 
-import Business.Action;
-import Business.CommentAction;
-import Business.Entity;
-import Business.Poll;
-import Business.PollAction;
-import Business.RatingAction;
-import Business.User;
+import Business.*;
 
 
 
@@ -45,50 +39,17 @@ public class Database {
 		String ipaddress = "127.0.0.1";
 		String dbName = "knowItAll";
 		String user = "root";
-		String password = "root!";
+		String password = "root";
+		
 		
 		//parse the sql source file
 		try{
-//			String configFile = "config.txt";
-//			///KnowItAll/src/config.txt
-//			String line = null;
-//			
-//			FileReader fileReader = new FileReader(configFile);
-//			BufferedReader br = new BufferedReader(fileReader);
-//			
-//			//read info from config file
-//			while((line = br.readLine()) != null){
-//				String [] strSplit;
-//				strSplit = line.split(":");
-//				String id = strSplit[0];
-//				
-//				switch(id){
-//					case "ipaddress":
-//						ipaddress = strSplit[1].trim();
-//						break;
-//					case "db":
-//						dbName = strSplit[1].trim();
-//						break;
-//					case "user":
-//						user = strSplit[1].trim();
-//						break;
-//					case "password":
-//						password = strSplit[1].trim();
-//						break;
-//				}//switch
-//			}//while
-
 			//connect to the sql database
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://" + ipaddress + "/" + dbName + "?user=" + user + 
 					"&password=" + password + "&useSSL=false");
 			st = conn.createStatement();
-			
-//			br.close();
-//		} catch(FileNotFoundException fnfe){
-//			System.out.println("fnfe in Database: " + fnfe.getMessage());
-//		} catch (IOException ioe){
-//			System.out.println("ioein Database: " + ioe.getMessage());
+
 		} catch (ClassNotFoundException cnfe){
 			System.out.println("cnfe in Database: " + cnfe.getMessage());
 		} catch(SQLException sqle){
@@ -941,10 +902,10 @@ public class Database {
 		int followingID = getUserID(following);
 		
 		try{
-			ps = conn.prepareStatement("DELETE FROM Following WHERE followingID=" + followingID );
+			ps = conn.prepareStatement("DELETE FROM Following WHERE following=" + followingID + " AND follower=" + followerID + ";");
 			ps.execute();
 		} catch(SQLException sqle){
-			System.out.println("sqle in addUser: " + sqle.getMessage());
+			System.out.println("sqle in unfollow: " + sqle.getMessage());
 		}
 	}//unfollow()
 	
@@ -1078,16 +1039,19 @@ public class Database {
 	//update the rating of an entity
 	private void updateRating(int subjectID, Boolean upVote){
 		int rating = 0;
+		Timestamp timeEnd = null;
+		System.out.println("update rating timeEnd: " + timeEnd);
 		
 		// get the current rating for the entity
 		try {
-			ps = conn.prepareStatement("SELECT rating "
+			ps = conn.prepareStatement("SELECT rating, timeEnd "
 					+ "FROM Entities "
 					+ "WHERE entityID = '" + subjectID + "';");
 
 			rs = ps.executeQuery();
 			rs.next();
 			rating = rs.getInt("rating");
+			timeEnd = rs.getTimestamp("timeEnd");
 		} catch (SQLException sqle) {
 			System.out.println("sqle in updateRating: " + sqle.getMessage());
 		}
@@ -1102,10 +1066,10 @@ public class Database {
 			rating -= 2;
 		}
 
-		// update the numViews
+		// update the rating
 		try {
 			ps = conn.prepareStatement("UPDATE Entities " 
-					+ "SET rating = " + rating + " "
+					+ "SET timeEnd = '" + timeEnd + "', " + "rating = '" + rating + "' "
 					+ "WHERE entityID = '" + subjectID + "';");
 			ps.execute();
 		} catch (SQLException sqle) {
@@ -1114,135 +1078,181 @@ public class Database {
 	}//updateRating()
 	
 	
-	public static void main(String [] args){
-//		Database db = new Database();
-//		
-//		//test addUser
-//		User newUser = new User("mbent@usc.edu", "password", "Morgan", "Bent");
-//		db.addUser(newUser);
-//		
-//		//test getUser
-//		User user = db.getUser("mbent@usc.edu");
-//		System.out.println("Email: " + user.getEmail());
-//		System.out.println("fName: " + user.getFName());
-//		System.out.println("lName: " + user.getLName());
-//		
-//		//test addEntity
-//		ArrayList<String> tags = new ArrayList<String>();
-//		tags.add("yum");
-//		Calendar calendar = Calendar.getInstance();
-//		Entity newEntity = new Entity("Pizza", 1, "pizza pizza", tags, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity);
-//		db.addNumView(1, "Entity");
-//		db.addNumView(1, "Entity");
-//		db.addNumView(1, "Entity");
-//		db.addNumView(1, "Entity");
-//		
-//		
-//		ArrayList<String> tags1 = new ArrayList<String>();
-//		tags.add("yum");
-//		Calendar cal = Calendar.getInstance();
-//		Entity newEntity1 = new Entity("hello", 2, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity1);
-//		db.addNumView(2, "Entity");
-//		db.addNumView(2, "Entity");
-//		
-//		
-//		Entity newEntity2 = new Entity("Morgan", 3, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity2);
-//		db.addNumView(3, "Entity");
-//		db.addNumView(3, "Entity");
-//		db.addNumView(3, "Entity");
-//		db.addNumView(3, "Entity");
-//		db.addNumView(3, "Entity");
-//		db.addNumView(3, "Entity");
-//		db.addNumView(3, "Entity");
-//		db.addNumView(3, "Entity");
-//		
-//		
-//		Entity newEntity3 = new Entity("Sebastian", 4, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity3);
-//		db.addNumView(4, "Entity");
-//		db.addNumView(4, "Entity");
-//		db.addNumView(4, "Entity");
-//		db.addNumView(4, "Entity");
-//		db.addNumView(4, "Entity");
-//		db.addNumView(4, "Entity");
-//		
-//		
-//		
-//		Entity newEntity4 = new Entity("Natalie", 5, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity4);
-//		db.addNumView(5, "Entity");
-//		db.addNumView(5, "Entity");
-//		db.addNumView(5, "Entity");
-//		
-//		Entity newEntity5 = new Entity("Natalie", 6, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity5);
-//		db.addNumView(6, "Entity");
-//		db.addNumView(6, "Entity");
-//		db.addNumView(6, "Entity");
-//		
-//		Entity newEntity6 = new Entity("Natalie", 7, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity6);
-//		db.addNumView(7, "Entity");
-//		db.addNumView(7, "Entity");
-//		db.addNumView(7, "Entity");
-//	
-//		Entity newEntity7 = new Entity("Natalie", 8, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity7);
-//		db.addNumView(8, "Entity");
-//		db.addNumView(8, "Entity");
-//		db.addNumView(8, "Entity");
-//		
-//		Entity newEntity8 = new Entity("Natalie", 9, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity8);
-//		db.addNumView(9, "Entity");
-//		db.addNumView(9, "Entity");
-//		db.addNumView(9, "Entity");
-//		
-//		Entity newEntity9 = new Entity("Natalie", 10, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity9);
-//		db.addNumView(10, "Entity");
-//		db.addNumView(10, "Entity");
-//		db.addNumView(10, "Entity");
-//		
-//		Entity newEntity10 = new Entity("Natalie", 11, "hi", tags1, true, calendar, "http://grfx.cstv.com/photos/schools/usc/sports/genrel/auto_player/11869977.jpeg");
-//		db.addEntity(newEntity10);
-//		db.addNumView(11, "Entity");
-//		db.addNumView(11, "Entity");
-//		db.addNumView(11, "Entity");
+	//update the action corresponding with a user's vote
+	public void editVote(int subjectID, String userEmail, String newVote){
+		int userID = getUserID(userEmail);
+		String oldVote = "";
 		
+		//get the current choice
+		try {
+			ps = conn.prepareStatement("SELECT actionValue " 
+					+ "FROM Activities " 
+					+ "WHERE subjectID = " + subjectID + " " 
+					+ "AND type = 'PollAction' "
+					+ "AND userID = " + userID + " ");
+			rs = ps.executeQuery();
+			
+			rs.next();
+			oldVote = rs.getString("actionValue");
+			
+		} catch (SQLException sqle) {
+			System.out.println("sqle in editRating: " + sqle.getMessage());
+		}
+		
+		// update the poll action in activities table
+		try {
+			ps = conn.prepareStatement("UPDATE Activities " 
+					+ "SET actionValue = '" + newVote + "' "
+					+ "WHERE subjectID = " + subjectID + " " 
+					+ "AND type = 'PollAction' "
+					+ "AND userID = " + userID + " ");
+			ps.execute();
+		} catch (SQLException sqle) {
+			System.out.println("sqle in editVote: " + sqle.getMessage());
+		}
+		
+		//decrement the vote count on the old choice
+		updateOptionCount(subjectID, oldVote, -1);
+		//increment the vote count on the new choice
+		updateOptionCount(subjectID, newVote, 1);
+	}//editVote()
 	
+	
+	//update the number of votes for the old option and the new option
+	private void updateOptionCount(int pollID, String option, int numDif){
+		int numVotes = 0;
 		
-		//TODO: test poll
-		/*ArrayList<String> pollTags = new ArrayList<String>(); 
-		pollTags.add("hi");
-		pollTags.add("my");
-		pollTags.add("dear");
-		pollTags.add("friend");
-		ArrayList<String> pollOptions = new ArrayList<String>(); 
-		pollOptions.add("Blaze"); 
-		pollOptions.add("Pizza Studio"); 
-		db.addEntity(newEntity1);
-		db.addNumView(12, "Entity");
-		db.addNumView(12, "Entity");
-		db.addNumView(12, "Entity");*/
+		// get the current numVotes for the option
+		try {
+			ps = conn.prepareStatement("SELECT numVotes "
+					+ "FROM Options "
+					+ "WHERE pollID = " + pollID + " "
+					+ "AND title = '" + option + "';");
 
-		
-		//test addPoll
-//		ArrayList<String> tags = new ArrayList<String>();
-//		tags.add("tag1");
-//		ArrayList<String> options = new ArrayList<String>();
-//		options.add("option1");
-//		options.add("option2");
-//		Calendar calendar = Calendar.getInstance();
-//		Poll newPoll = new Poll("my poll", 1, tags, options, true, calendar, "someURL");
-//		db.addPoll(newPoll);
-		
-		//ArrayList<Poll> allPolls = db.getPolls();
-//		ArrayList<Poll> search = db.searchForPolls("my");
-//		System.out.println(search.size());
+			rs = ps.executeQuery();
+			rs.next();
+			numVotes = rs.getInt("numVotes");
+		} catch (SQLException sqle) {
+			System.out.println("sqle in updateOptionCount: " + sqle.getMessage());
+		}
 
-	}//main
+		//change the numVotes as necessary
+		numVotes += numDif;
+
+		// update the numVotes
+		try {
+			ps = conn.prepareStatement("UPDATE Options " 
+					+ "SET numVotes = " + numVotes + " "
+					+ "WHERE pollID = " + pollID + " "
+					+ "AND title = '" + option + "';");
+			ps.execute();
+		} catch (SQLException sqle) {
+			System.out.println("sqle in updateOptionCount: " + sqle.getMessage());
+		}
+	}//updateOptionCount()
+	
+	
+	//delete a poll
+	public void deletePoll(int pollID){
+		
+		try{
+			//delete activities for the entity
+			ps = conn.prepareStatement("DELETE FROM Activities "
+					+ "WHERE subjectID = " + pollID + ";" );
+			ps.execute();
+			//delete poll options
+			ps = conn.prepareStatement("DELETE FROM Options "
+					+ "WHERE pollID = " + pollID + ";" );
+			ps.execute();
+			//delete poll tags
+			ps = conn.prepareStatement("DELETE FROM PollTags "
+					+ "WHERE pollID = " + pollID + ";" );
+			ps.execute();
+			//delete poll
+			ps = conn.prepareStatement("DELETE FROM Polls "
+					+ "WHERE pollID = " + pollID + ";" );
+			ps.execute();
+		} catch(SQLException sqle){
+			System.out.println("sqle in deletePoll: " + sqle.getMessage());
+		}
+	}//deletePoll()
+	
+	
+	//delete an entity
+	public void deleteEntity(int entityID){
+		
+		try{
+			//delete activities for the entity
+			ps = conn.prepareStatement("DELETE FROM Activities "
+					+ "WHERE subjectID = " + entityID + ";" );
+			ps.execute();
+			//delete entity tags
+			ps = conn.prepareStatement("DELETE FROM EntityTags "
+					+ "WHERE entityID = " + entityID + ";" );
+			ps.execute();
+			//delete poll
+			ps = conn.prepareStatement("DELETE FROM Entities "
+					+ "WHERE entityID = " + entityID + ";" );
+			ps.execute();
+		} catch(SQLException sqle){
+			System.out.println("sqle in deleteEntity: " + sqle.getMessage());
+		}
+	}//deletePoll()
+
+	
+	//add a new blog
+	public void addBlog(Blog newBlog){
+		String title = newBlog.getTitle();
+		String description = newBlog.getDescription();
+		String content = newBlog.getContent();
+		String dateCreated = newBlog.getDateCreated();
+		String image = newBlog.getImage();
+		String creator = newBlog.getCreator();
+		int creatorID = getUserID(creator);
+		
+		try{
+			ps = conn.prepareStatement("INSERT INTO Blogs(creatorID, title, description, image, content, dateCreated) "
+					+ "VALUES(" + creatorID + ", '" + title + "', '" + description + "', '" + image + "', '" 
+					+ content + "', '11/11/2017')");
+			
+			ps.execute();
+		} catch(SQLException sqle){
+			System.out.println("sqle in addBlog: " + sqle.getMessage());
+		}
+		
+	}//addBlog()
+	
+	
+	//get all the blogs
+	public ArrayList<Blog> getBlogs(){
+		ArrayList<Blog> blogs = new ArrayList<Blog>();
+		
+		try{			
+			ps = conn.prepareStatement("SELECT b.title, b.description, b.content, b.dateCreated, "
+					+ "b.image, u.email "
+					+ "FROM Blogs b, Users u "
+					+ "WHERE b.creatorID = u.userID;");
+			rs = ps.executeQuery();
+			
+			while(rs.next()){
+				String title = rs.getString("b.title");		//blog title
+				String description = rs.getString("b.description");	//blog description
+				String content = rs.getString("b.content");	//blog content
+				String dateCreated = rs.getString("b.dateCreated");	//blog description
+				String image = rs.getString("b.image");			//image url
+				String creator = rs.getString("u.email");	//blog description
+				
+				//create the blog and add it to the list of blogs
+				Blog blog = new Blog(title, description, creator, image, content, dateCreated);
+				blogs.add(blog);
+			}
+		} catch(SQLException sqle){
+			System.out.println("sqle in getBlogs: " + sqle.getMessage());
+		} catch(ArithmeticException ae){
+			System.out.println("ae in getBLogs: " + ae.getMessage());
+		}
+		
+		return blogs;
+	}//getBlogs()
+
 }

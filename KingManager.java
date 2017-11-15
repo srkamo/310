@@ -16,6 +16,7 @@ public class KingManager {
 	private Database database;
 	private EntityManager entityManager;
 	private PollManager pollManager;
+	private BlogManager blogManager;
 	private User curUser;
 	private ArrayList<Object> allItemsDisplayed;
 	
@@ -24,6 +25,7 @@ public class KingManager {
 		database  = new Database();
 		entityManager = new EntityManager();
 		pollManager = new PollManager();
+		blogManager = new BlogManager();
 		ids = database.getNumThings();
 		curUser = null;
 		allItemsDisplayed = new ArrayList<Object>();
@@ -94,14 +96,20 @@ public class KingManager {
 	}
 	
 	
-	//returns true if user has already rated or voted
-	public Boolean userRatedOrVoted(int subjectID, String email){
-		if (database.userRatedOrVoted(subjectID, email) != null) {
-			return true;
-		}
-		else {
-			return false;
-		}
+	//retruns null if user has not rated or voted
+	//otherwise returns thw action associated with the rating or voting
+	public Action userRatedOrVoted(int subjectID, String email){
+		return database.userRatedOrVoted(subjectID, email);
+	}//userRatedOrVoted()
+	
+	
+	//returns the number of items to use as an id
+	public int getIds(){
+		return ids;
+	}//getIds()
+	
+	public int getCurrId(){
+		return ids;
 	}
 	
 	
@@ -124,10 +132,52 @@ public class KingManager {
 		database.editRating(subjectID, email);
 		entityManager.setEntityList(database.getEntities());
 	}
+	
+	public void editVote(int subjectID, String email, String newVote){
+		database.editVote(subjectID, email, newVote);
+		pollManager.setPollList(database.getPolls());
+	}
+	
+	public void deletePoll(int pollID){
+		database.deletePoll(pollID);
+		pollManager.setPollList(database.getPolls());
+	}
+	
+	public void deleteEntity(int entityID){
+		database.deleteEntity(entityID);
+		entityManager.setEntityList(database.getEntities());
+	}
+	
+	public void followUser(String userToFollow) {
+		User toFollow = this.getUser(userToFollow); 
+		database.newFollower(curUser.getEmail(), userToFollow);
+		curUser = database.getUser(curUser.getEmail());
+	}
+	
+	public Boolean alreadyFollows(String userToFollow) {
+		User toFollow = this.getUser(userToFollow); 
+		Boolean doesFollow = false; 
+		
+		if (curUser.getFollowing().contains(userToFollow)) {
+			doesFollow = true; 
+		}
+		
+		return doesFollow;
+	}
+	
+	public void unfollowUser(String userToUnfollow) {
+		User toUnfollow = this.getUser(userToUnfollow); 
+		database.unfollow(curUser.getEmail(), userToUnfollow);
+		curUser = database.getUser(curUser.getEmail());
+	}	
 
 /*----------------EntityManager------------------------------- */
 	public Entity getEntity(int entityID){
 		return entityManager.getEntity(entityID);
+	}
+	
+	public Entity getEntityByTitle (String entityTitle){
+		return entityManager.getEntityByTitle(entityTitle);
 	}
 	
 	public void addEntity(Entity newEntity){
@@ -165,10 +215,21 @@ public class KingManager {
 		entityManager.addView(entityID);
 		database.addNumView(entityID, "Entity");
 	}
+	
+	public Boolean isEntityExpired(int id){
+		Entity currEntity = this.getEntity(id);
+		Calendar curCal = currEntity.getTimeEnd();
+		Calendar now = Calendar.getInstance();
+		return curCal.before(now);
+	}
 
 /*----------------PollManager------------------------------- */
 	public Poll getPoll(int pollID){
 		return pollManager.getPoll(pollID);
+	}
+	
+	public Poll getPollByTitle (String pollTitle){
+		return pollManager.getPollByTitle(pollTitle);
 	}
 	
 	public void addPoll(Poll newPoll){
@@ -199,16 +260,6 @@ public class KingManager {
 	}
 	
 	
-	//returns the number of items to use as an id
-	public int getIds(){
-		return ids;
-	}//getIds()
-	
-	public int getCurrId(){
-		return ids;
-	}
-	
-	
 	public Boolean isPollExpired(int id){
 		Poll currPoll = this.getPoll(id);
 		Calendar curCal = currPoll.getTimeEnd();
@@ -216,33 +267,20 @@ public class KingManager {
 		return curCal.before(now);
 	}
 	
-	public Boolean isEntityExpired(int id){
-		Entity currEntity = this.getEntity(id);
-		Calendar curCal = currEntity.getTimeEnd();
-		Calendar now = Calendar.getInstance();
-		return curCal.before(now);
+	
+	
+	/*----------------BlogManager------------------------------- */
+	public Blog getBlog(String title){
+		return blogManager.getBlog(title);
 	}
 	
-	public void followUser(String userToFollow) {
-		User toFollow = this.getUser(userToFollow); 
-		database.newFollower(curUser.getEmail(), userToFollow);
-		curUser = database.getUser(curUser.getEmail());
+	public void addBlog(Blog newBlog){
+		database.addBlog(newBlog);
+		blogManager.setBlogList(database.getBlogs());
 	}
 	
-	public Boolean alreadyFollows(String userToFollow) {
-		User toFollow = this.getUser(userToFollow); 
-		Boolean doesFollow = false; 
-		
-		if (curUser.getFollowing().contains(userToFollow)) {
-			doesFollow = true; 
-		}
-		
-		return doesFollow;
-	}
-	
-	public void unfollowUser(String userToUnfollow) {
-		User toUnfollow = this.getUser(userToUnfollow); 
-		database.unfollow(curUser.getEmail(), userToUnfollow);
-	}	
-	
+	//returns all blogs for blogFeed.jsp
+	public ArrayList<Blog> getAllBlogs(){
+		return blogManager.getAllBlogs();
+	}//getAllItemsDisplayed()
 }
