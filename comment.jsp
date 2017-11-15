@@ -18,18 +18,34 @@
 			idStr=idStr.substring(0,idStr.length()-1);
 			int id = Integer.parseInt(idStr);
 			
-			String editEntity = request.getParameter("editEntityComment");
-			if(editEntity != null && editEntity.equals("true")){
-				System.out.println("editEntity is true");
-				String comment = request.getParameter("commentTextbox");
-				
-				String oldComment = request.getParameter("oldComment");
-				System.out.println("comment: " +  comment);
-				response.sendRedirect("../entityPage.jsp?subjectID="+id);
-			}
+			// edit entity comment
+				String editEntity = request.getParameter("editEntityComment");
+				if(editEntity != null && editEntity.equals("true")){
+					String comment = request.getParameter("commentTextbox");
+					String oldComment = request.getParameter("oldComment");
+					
+					km.editComment(id, oldComment, comment);
+					session.setAttribute("kingManager", km);
+					
+					response.sendRedirect("../entityPage.jsp?subjectID="+id);
+				}
+			
+			
+			// edit poll comment
+				String editPoll = request.getParameter("editPollComment");
+				if(editPoll != null && editPoll.equals("true")){
+					String comment = request.getParameter("commentTextbox");
+					String oldComment = request.getParameter("oldComment");
+					
+					km.editComment(id, oldComment, comment);
+					session.setAttribute("kingManager", km);
+					
+					response.sendRedirect("../pollPage.jsp?subjectID="+id);
+				}
+			
 		
 			//if user is not logged in
-			if(km.getCurUser() == null){
+			else if(km.getCurUser() == null){
 				String errorMessage = "You must be logged in to comment on this item.";
 				session.setAttribute("errorMessageComment", errorMessage);
 				
@@ -51,12 +67,12 @@
 						String errorMessage = "This entity is expired";
 						session.setAttribute("errorMessageComment", errorMessage);
 						response.sendRedirect("../entityPage.jsp?subjectID="+id);
-					}//if entity expired
-
+					}
+					//if poll expired
 					
 				}//if comment on entity
 				//else comment on poll
-				else{
+				else if(subjectType.equals("Poll")){
 					
 					//if poll expired
 					if(km.isPollExpired(id)){
@@ -64,9 +80,16 @@
 						session.setAttribute("errorMessageComment", errorMessage);
 						response.sendRedirect("../pollPage.jsp?subjectID="+id);
 					}//if poll expired
-
 					
 				}//else comment on poll
+				else if(subjectType.equals("Blog")){
+					if(km.isPollExpired(id)){
+						String errorMessage = "This poll is expired";
+						session.setAttribute("errorMessageComment", errorMessage);
+						response.sendRedirect("../blogPage.jsp?subjectID="+id);
+					}//if poll expired
+					
+				}
 				
 				
 				
@@ -86,10 +109,15 @@
 					session.setAttribute("kingManager", km);
 					response.sendRedirect("../entityPage.jsp?subjectID=" + id);
 				}
-				else{
+				else if(subjectType.equals("Poll")){
 					km.newPollComment(id, userEmail, comment, isAnon);
 					session.setAttribute("kingManager", km);
 					response.sendRedirect("../pollPage.jsp?subjectID=" + id);
+				}
+				else if(subjectType.equals("Blog")){
+					//km.newBlogComment(id, userEmail, comment, isAnon);
+					session.setAttribute("kingManager", km);
+					response.sendRedirect("../BlogPage.jsp?subjectID=" + id);
 				}
 				
 			}//else user logged in
@@ -100,7 +128,6 @@
 			
 			
 			
-
 			
 /* 			//error checking if the poll is expired
 			else if(km.isEntityExpired(id)){

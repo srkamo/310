@@ -4,6 +4,7 @@
 <%@page import="Business.Blog" %>
 <%@page import="java.util.ArrayList" %>
 <%@page import="Business.KingManager" %>
+<%@page import="Business.CommentAction" %>
 <%@page import="java.util.GregorianCalendar"%>
 <%@page import="java.util.Calendar"%>
 <%@page import="java.text.DateFormat"%>
@@ -18,6 +19,9 @@
 		KingManager km = (KingManager)session.getAttribute("kingManager");
 		Boolean errorFound = false;
 		String errorMessage = "";
+		
+		int id = km.ids;
+		id++;
 		
 		String title = request.getParameter("title");		//poll title
 		String blogContent = request.getParameter("blogContent");
@@ -66,12 +70,12 @@
 		}
 		else{
 		
-			Blog newBlog = new Blog(title, description, km.getCurUser().getEmail(), image, blogContent, "");
+			Blog newBlog = new Blog(id, title, description, km.getCurUser().getEmail(), image, blogContent, "", new ArrayList<CommentAction>());
 			//give new poll to 
 			km.addBlog(newBlog);
 			//km.addPoll(newPoll);
 			session.setAttribute("kingManager", km);
-			response.sendRedirect("../feed.jsp");
+			response.sendRedirect("../blogFeed.jsp");
 		}
 		
 		 
