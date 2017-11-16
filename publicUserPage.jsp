@@ -152,7 +152,7 @@
             
             
         
-            <%if(!km.alreadyFollows(email)){ %>
+            <%if(!km.alreadyFollows(email) && !km.getCurUser().getEmail().equals(email)){ %>
             
             	<center> 
             		<button type="button" onClick="myFunction()" id="FOLLOW" style="display:block;">
@@ -160,7 +160,7 @@
             		</button>
             	</center>
             	<%} 
-            if(km.alreadyFollows(email)) { %>
+            if(km.alreadyFollows(email) && !km.getCurUser().getEmail().equals(email)) { %>
             	<center> 
             		<button type="button" onClick="myFunction()" id="UNFOLLOW" style="display:block;"> 
             			<a href=<%="\" servlets/unfollowUser.jsp?userEmail=" + email + "\""%> >UnFollow This User</a>
