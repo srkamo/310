@@ -8,6 +8,9 @@
 <%@ page import="Business.PollAction" %>
 <%@ page import="Business.RatingAction" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="Business.Poll" %>
+<%@ page import="Business.Entity" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -44,91 +47,12 @@
         <link rel="stylesheet" href="assets/css/style.css">
         <link rel="stylesheet" href="assets/css/responsive.css">
         
-        <script src="jquery-3.2.1.min.js"></script>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
-		<script type="text/javascript" >
-		
-		$(function() {
-			$(".followUser").click(function(){
-				var element = $(this);
-				var I = element.attr("id");
-				var info = 'id=' + I;
-				$("#loading").html('<img src="loader.gif" >');
-				 
-				$.ajax({
-					type: "POST",
-					url: "followUser.jsp",
-					data: info,
-					success: function(){
-						$("#loading").ajaxComplete(function(){}).slideUp();
-						System.out.println("HEREEE");
-						$("#hide").click(function(){$(".followUser").hide();});
-						$("#show").click(function(){$(".unfollowUser").show();});
-					}
-				});
-				return false;
-			});
-		});
-		</script>
-		<script type="text/javascript" >
-		$(function() 
-		{
-			$(".unfollowUser").click(function(){
-				var element = $(this);
-				var I = element.attr("id");
-				var info = 'id=' + I;
-				$("#loading").html('<img src="loader.gif" >');
-				 
-				$.ajax({
-					type: "POST",
-					url: "unfollowUser.jsp",
-					data: info,
-					success: function(){
-						$("#loading").ajaxComplete(function(){}).slideUp();
-						$("#hide").click(function(){$(".unfollowUser").hide();});
-						$("#show").click(function(){$(".followUser").show();});
-					}
-				
-				});
-				return false;
-			});
-		});
-		</script>
-		<script type="text/javascript" >
-		$(function()
-		{		
-			$(".hideFollow").click(function() {
-			    var x = document.getElementById("FOLLOW");
-			    var y = document.getElementById("UNFOLLOW");
-			    if (x.style.display == "none") {
-			        x.style.display = "block";
-			        y.style.display = 'none';
-			    } else {
-			        x.style.display = "none";
-			        y.style.display = 'block';
-	
-			    }
-			});
-		});
-		</script>
-		<script type="text/javascript" >
-		$(function()
-		{		
-			$(".hideUnfollow").click(function() {
-			    var x = document.getElementById("UNFOLLOW");
-			    var y = document.getElementById("FOLLOW");
-			    
-			    if (x.style.display == "none") {
-			        x.style.display = "block";
-			        y.style.display = 'none';
-			    } else {
-			        x.style.display = "none";
-			        y.style.display = 'block';
-	
-			    }
-			});
-		});
-		</script>
+		<script type="text/javascript">
+            function myFunction(){
+               console.log("hello world");
+           	 }
+      	</script>
+        
 </head>
 <%
 	KingManager km  = (KingManager) session.getAttribute("kingManager");
@@ -187,10 +111,11 @@
                 <div class="collapse navbar-collapse yamm" id="navigation">
                     <div class="button navbar-right">
                         <button class="navbar-btn nav-button wow bounceInRight login" onclick=" window.location='login.jsp'" data-wow-delay="0.45s">Login/Sign Up</button>
-                        <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create a Poll</button>
-                        <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create a Rating</button>
+                        <button class="navbar-btn nav-button wow fadeInRight poll" onclick=" window.location='createPollPage.jsp'" data-wow-delay="0.48s">Create Poll</button>
+                        <button class="navbar-btn nav-button wow fadeInRight rating" onclick=" window.location='createEntityPage.jsp'" data-wow-delay="0.54s">Create Rating</button>
+                        <button class="navbar-btn nav-button wow fadeInRight create-blog" onclick=" window.location='createBlogPage.jsp'" data-wow-delay="0.54s">Create Blog</button>
                         <button class="navbar-btn nav-button wow fadeInRight search" onclick=" window.location='feed.jsp'" data-wow-delay="0.59s">Search</button>
-                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blog.html'" data-wow-delay="0.59s">Blog</button>
+                        <button class="navbar-btn nav-button wow fadeInRight blog" onclick=" window.location='blogFeed.jsp'" data-wow-delay="0.59s">Blog</button>
                         <button class="navbar-btn nav-button wow fadeInRight user" onclick=" window.location='userPage.jsp'" data-wow-delay="0.59s">User Profile</button>
                         <button class="navbar-btn nav-button wow fadeInRight logout" onclick=" window.location='servlets/logout.jsp'" data-wow-delay="0.59s">Logout</button>
                     </div>
@@ -225,25 +150,30 @@
             <center><h4 class="info-text" style="color: red;"><%=errorMessageLogFollow %></h4></center>
             <center><h4 class="info-text" style="color: red;"><%=errorMessageFollow %></h4></center>
             
-            	
-            	
-            	<center> <button type="button" onclick="followUser();hideFollow()" id="FOLLOW" style="display:block;"><a href=<%="\" servlets/followUser.jsp?userEmail=" + email + "\""%> >Follow This User</a></button></center>
             
-            	<center> <button type="button" onclick="unfollowUser();hideUnollow()" id="UNFOLLOW" style="display:block;"> <a href=<%="\" servlets/unfollowUser.jsp?userEmail=" + email + "\""%> >UnFollow This User</a></button></center>
+        
+            <%if(!km.alreadyFollows(email)){ %>
             
-            
-
+            	<center> 
+            		<button type="button" onClick="myFunction()" id="FOLLOW" style="display:block;">
+            			<a href=<%="\" servlets/followUser.jsp?userEmail=" + email + "\""%> >Follow This User</a>
+            		</button>
+            	</center>
+            	<%} 
+            if(km.alreadyFollows(email)) { %>
+            	<center> 
+            		<button type="button" onClick="myFunction()" id="UNFOLLOW" style="display:block;"> 
+            			<a href=<%="\" servlets/unfollowUser.jsp?userEmail=" + email + "\""%> >UnFollow This User</a>
+            		</button>
+            	</center>
+            	<%} %>
             <br>
+            
+            
             <%   
                 if(firstName != "" && lastName != "" && email != "")
                 {
-                	%>
-                	<h4><center>First Name: <%= firstName %> </center></h4>
-    				<br>
-    				<h4><center>Last Name: <%= lastName %> </center></h4>
-    				<br>
-    				<h4><center>Email: <%= email %> </center></h4><%
-                } 
+                }
                 else
                 {
                 	%><h4><center>Welcome, Guest. Please login or create an 
@@ -264,34 +194,45 @@
             	{
             		String content = null; 
             		String title = null; 
+            		Poll pollWithURL = null; 
+            		Entity entityWithURL = null; 
+            		int pollID;
+            		int entityID; 
             		for(int i=0; i < currUserActions.size(); i++){
             			int subjectID = currUserActions.get(i).getSubjectID(); 
 	            		if(currUserActions.get(i) instanceof CommentAction){
 			        		if(km.getEntity(subjectID) == null){
 			        			title = km.getPoll(subjectID).getTitle(); 
-			        			%><p><%= firstName %> commented on a poll titled: <strong><%= title %></strong></p> <%
+			        			pollWithURL = km.getPollByTitle(title); 
+			        			pollID = pollWithURL.getID(); 
+			        			%><p><%= firstName %> commented on a poll titled: <strong><a href="<%="\" pollPage.jsp?subjectID=" + pollID + "\"" %>"><%= title %></a></strong></p> <%
 			        		} 
 			        		else {
 			        			title = km.getEntity(subjectID).getTitle(); 
-			        			%><p><%= firstName %> commented on a rating titled: <strong><%= title %></strong></p> <%
+			        			entityWithURL = km.getEntityByTitle(title); 
+			        			entityID = entityWithURL.getID(); 
+			        			%><p><%= firstName %> commented on a rating titled: <strong><a href="<%="\" entityPage.jsp?subjectID=" + entityID + "\"" %>"><%= title %></a></strong></p> <%
 			        		}
 						}
 			        	else if(currUserActions.get(i) instanceof PollAction){
 			        		content = ((PollAction)currUserActions.get(i)).getOptionChosen();
 			        		title = km.getPoll(subjectID).getTitle(); 
-			        		%><p><%= firstName %> voted <strong><%= content %></strong> on a poll titled: <strong><%= title %></strong></p> <%
+			        		pollWithURL = km.getPollByTitle(title); 
+		        			pollID = pollWithURL.getID(); 
+			        		%><p><%= firstName %> voted <strong><%= content %></strong> on a poll titled: <strong><a href="<%="\" pollPage.jsp?subjectID=" + pollID + "\"" %>"><%= title %></a></strong></p> <%
 			        		
 						}
 						else if(currUserActions.get(i) instanceof RatingAction){
 							Boolean isUpVote = ((RatingAction)currUserActions.get(i)).isUpVote();
-							System.out.println("isUpVote" + isUpVote); 
 			        		title = km.getEntity(subjectID).getTitle(); 
+			        		entityWithURL = km.getEntityByTitle(title); 
+		        			entityID = entityWithURL.getID(); 
 			        		if(isUpVote){
-			        			%><p><%= firstName %> gave a thumbs up to a rating titled: <strong><%= title %></strong></p> <%
+			        			%><p><%= firstName %> gave a thumbs up to a rating titled: <strong><a href="<%="\" entityPage.jsp?subjectID=" + entityID + "\"" %>"><%= title %></a></strong></p> <%
 			        		}
 			        			
 			        		else{
-			        			%><p><%= firstName %> gave a thumbs down to a rating titled: <strong><%= title %></strong></p> <%
+			        			%><p><%= firstName %> gave a thumbs down to a rating titled: <strong><a href="<%="\" entityPage.jsp?subjectID=" + entityID + "\"" %>"><%= title %></a></strong></p> <%
 			        		}
 			        			
 						}
