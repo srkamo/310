@@ -63,13 +63,25 @@ INSERT INTO EntityTags(tagID, entityID, title)
 VALUES(3, 2, "Pizza");
 
 INSERT INTO EntityTags(tagID, entityID, title)
-VALUES(4 ,3, "Pizza");
+VALUES(4, 2, "Food");
 
 INSERT INTO EntityTags(tagID, entityID, title)
-VALUES(5, 4, "Pizza");
+VALUES(5, 3, "Pizza");
 
 INSERT INTO EntityTags(tagID, entityID, title)
-VALUES(6, 5, "Pizza");
+VALUES(6, 3, "Food");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(7, 4, "Pizza");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(8, 4, "Food");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(9, 5, "Pizza");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(10, 5, "Food");
 
 
 
@@ -88,16 +100,40 @@ VALUES(9, "CS 270", "Makes 170 look like a joke", 0, "http://www-bcf.usc.edu/~aa
 
 #Create Computer Science Entity Tags 
 INSERT INTO EntityTags(tagID, entityID, title)
-VALUES(7, 6,  "Computer Science");
+VALUES(11, 6,  "Computer Science");
 
 INSERT INTO EntityTags(tagID, entityID, title)
-VALUES(8, 7,  "Computer Science");
+VALUES(12, 6,  "Classes");
 
 INSERT INTO EntityTags(tagID, entityID, title)
-VALUES(9, 8,  "Computer Science");
+VALUES(13, 6,  "Professors");
 
 INSERT INTO EntityTags(tagID, entityID, title)
-VALUES(10, 9, "Computer Science");
+VALUES(14, 7,  "Computer Science");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(15, 7,  "Classes");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(16, 6,  "Professors");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(17, 8,  "Computer Science");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(18, 8,  "Classes");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(19, 6,  "Professors");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(20, 9, "Computer Science");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(21, 9, "Classes");
+
+INSERT INTO EntityTags(tagID, entityID, title)
+VALUES(22, 6,  "Professors");
 
 #Create Computer Science Poll 
 INSERT INTO Polls(pollID, title, image, numViews, isInfinite, timeEnd, creatorID, anonCreator )
@@ -105,7 +141,10 @@ VALUES(10, "Best Computer Science Class", "http://www.austincc.edu/sites/default
 
 #Create Computer Science Poll Tags 
 INSERT INTO PollTags(tagID, pollID, title)
-VALUES(11, 10 , "Computer Science");
+VALUES(3, 10 , "Computer Science");
+
+INSERT INTO PollTags(tagID, pollID, title)
+VALUES(4, 10 , "Classes");
 
 #Create Computer Science Poll Options 
 INSERT INTO Options(optionID, pollID, title, numVotes)
@@ -127,8 +166,10 @@ VALUES(11, "Best Pizza at USC", "https://www.cicis.com/media/1138/pizza_trad_pep
 
 #Create Pizza Poll Tags
 INSERT INTO PollTags(tagID, pollID, title) 
-VALUES(12, 11, "Pizza");
+VALUES(5, 11, "Pizza");
 
+INSERT INTO PollTags(tagID, pollID, title) 
+VALUES(6, 11, "Food");
 
 #Create Pizza Poll Options
 INSERT INTO Options(optionID, pollID, title, numVotes)
