@@ -74,7 +74,7 @@
 				}//subject type is entity
 				
 				//if subject type is poll
-				else{
+				else if(subjectType.equals("Poll")){
 					String editPoll = request.getParameter("editPollComment");
 					
 					//if poll expired
@@ -111,6 +111,26 @@
 					
 					response.sendRedirect("../pollPage.jsp?subjectID="+id);
 				}//else poll
+				
+				//else subject type is blog
+				else{
+					session.setAttribute("errorMessageComment", "");
+					String comment = request.getParameter("commentTextbox");
+					
+					User currUser = km.getCurUser();
+					String userEmail = currUser.getEmail();
+					
+					Boolean isAnon = true;
+					String checkbox = request.getParameter("checkbox");
+					if(checkbox == null)
+						isAnon = false;
+					
+					km.newBlogComment(id, userEmail, comment, isAnon);
+					session.setAttribute("kingManager", km);
+					
+					response.sendRedirect("../blogPage.jsp?subjectID="+id);
+				}//else blog
+				
 			}//else logged in
 				
 	
