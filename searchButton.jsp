@@ -18,6 +18,9 @@
 	<%
 		KingManager km = (KingManager)session.getAttribute("kingManager");
 		String search = request.getParameter("searchTextBar");
+		
+		String filter = request.getParameter("filter");
+		System.out.println("filter = "+filter);
 		String frequentSearch="";
 		if(search==null)
 		{
@@ -27,11 +30,12 @@
 		//list of objects to be displayed
 		if(search!=null)
 		{
-		km.search(search);
+		km.search(search, filter);
 		}
 		else
 		{
-		km.search(frequentSearch);
+			filter="everything";
+		km.search(frequentSearch, filter);
 		}
 		session.setAttribute("kingManager", km);
 		response.sendRedirect("../feed.jsp"); 

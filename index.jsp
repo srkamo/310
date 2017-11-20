@@ -53,7 +53,7 @@
 	else{
 		km = (KingManager)session.getAttribute("kingManager");
 	}
-	km.search("");
+	km.search("", "everything");
 	session.setAttribute("kingManager", km);
 	ArrayList<Object> allItems = km.getAllItemsDisplayed();
 	
@@ -138,7 +138,14 @@
                                 
                                  <a  href="servlets/searchButton.jsp?frequentSearch=class">  
                                 <p> #Class </p>   
-                                </a>            
+                                </a> 
+                                
+                                <select name="filter">
+ 									<option value="everything" selected>Everything</option>
+  									<option value="entities">Entities</option>
+  									<option value="polls">Polls</option>
+								</select>
+								     
                             </form>
                         </div>
                     </div>
