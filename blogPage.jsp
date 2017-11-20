@@ -1,7 +1,7 @@
 <%@ page import="Business.KingManager" %>
 <%@ page import="Business.Blog" %>
-<%@ page import="Business.CommentAction" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="Business.CommentAction" %>
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -41,9 +41,9 @@
     </head>
     
     <%
-	    KingManager km  = (KingManager) session.getAttribute("kingManager");
-		
-		String subjectID = request.getParameter("subjectID"); 
+ 		KingManager km  = (KingManager) session.getAttribute("kingManager");
+	
+    	String subjectID = request.getParameter("subjectID"); 
 		int id = Integer.parseInt(subjectID);
 		Blog currBlog = (Blog) km.getBlog(id);
 		String description = currBlog.getDescription(); 
@@ -106,7 +106,7 @@
                                 <div class="row wow fadeInRight animated">
                                     <div class="col-sm-6">
                                         <p class="author-category">
-                                            By <a href=<%="\" publicUserPage.jsp?email=" + creator + "\""%>><%=creator%></a>
+                                            By <a href="#"><%=creator%></a>
                                         </p>
                                     </div>
                                     <div class="col-sm-6 right" >
@@ -122,7 +122,41 @@
                             </div> 
 
                             <div id="post-content" class="post-body single wow fadeInLeft animated">
-                                <p><%=content%></p>                             
+                                <p><%=content%></p>   
+                                
+                           <h4><center>Leave a comment on this blog with your own opinions. </center></h4>
+                                
+                <div id="form-div">
+					<form action="servlets/comment.jsp">
+						<center><textarea name="commentTextbox" style="width:600px"></textarea></center>
+						<input type="hidden" name="id" value=<%=id%>/>
+						<input type="hidden" name="subjectType" value="Blog"/>
+						<center><input type="submit" value="Add Comment" style="width:600px"></center>
+						<center>Check this box if you would like to 
+						leave your comment anonymously: <input type="checkBox"  name="checkbox"></center>
+					</form>
+				</div>
+						<h4><Center>Comments: </Center></h4>
+						
+						<%
+						for(int i = 0; i<Comments.size(); i++){
+							
+							//comment not anon
+							if(!Comments.get(i).getIsAnon()){
+								%>
+								<p id="comment"><a href=<%="\" publicUserPage.jsp?email=" + Comments.get(i).getUser() + "\""%> ><%=Comments.get(i).getUser() %></a>: <strong><%= Comments.get(i).getContent() %></strong></p>
+								
+								<%
+							}
+							//comment anonymous
+							else{
+								%>
+								<p id="comment">Anonymous: <strong><%= Comments.get(i).getContent() %></strong></p>
+								
+								<%
+							}
+						}
+						%>                          
                         </section>
                     </div>                                 
                 </div>
