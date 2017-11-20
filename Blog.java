@@ -1,27 +1,35 @@
 package Business;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Blog {
+	private int id;
 	private String title;
 	private String description;
 	private String creator;
 	private String image;
 	private String content;
 	private String dateCreated;
+	private ArrayList<CommentAction> comments; 
 	
 	
-	public Blog(String title, String description, String creator, String image, String content,
-			String dateCreated){
+	public Blog(int id, String title, String description, String creator, String image, String content,
+		String dateCreated, ArrayList<CommentAction> comments){
+		
+		this.id = id;
 		this.title = title;
-		this. description = description;
+		this.description = description;
 		this.creator = creator;
 		this.image = image;
 		this.content = content;
 		this.dateCreated = dateCreated;
+		this.comments = comments;
 	}
 	
-	
+	public int getID(){
+		return id;
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -57,6 +65,12 @@ public class Blog {
 	}
 	public void setDateCreated(String dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+	public ArrayList<CommentAction> getComments(){
+		return comments;
+	}
+	public void addComment(CommentAction comment) { // this is new 
+		comments.add(comment);
 	}
 	
 }

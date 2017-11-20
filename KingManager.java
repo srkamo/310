@@ -26,6 +26,7 @@ public class KingManager {
 		entityManager = new EntityManager();
 		pollManager = new PollManager();
 		blogManager = new BlogManager();
+		blogManager.setBlogList(database.getBlogs()); 
 		ids = database.getNumThings();
 		curUser = null;
 		allItemsDisplayed = new ArrayList<Object>();
@@ -168,11 +169,16 @@ public class KingManager {
 	public void unfollowUser(String userToUnfollow) {
 		User toUnfollow = this.getUser(userToUnfollow); 
 		database.unfollow(curUser.getEmail(), userToUnfollow);
+		curUser = database.getUser(curUser.getEmail());
 	}	
 
 /*----------------EntityManager------------------------------- */
 	public Entity getEntity(int entityID){
 		return entityManager.getEntity(entityID);
+	}
+	
+	public Entity getEntityByTitle (String entityTitle){
+		return entityManager.getEntityByTitle(entityTitle);
 	}
 	
 	public void addEntity(Entity newEntity){
@@ -223,6 +229,10 @@ public class KingManager {
 		return pollManager.getPoll(pollID);
 	}
 	
+	public Poll getPollByTitle (String pollTitle){
+		return pollManager.getPollByTitle(pollTitle);
+	}
+	
 	public void addPoll(Poll newPoll){
 		database.addPoll(newPoll);
 		allItemsDisplayed.add(newPoll);
@@ -261,12 +271,23 @@ public class KingManager {
 	
 	
 	/*----------------BlogManager------------------------------- */
-	public Blog getBlog(String title){
-		return blogManager.getBlog(title);
+	public Blog getBlog(int id){
+		return blogManager.getBlog(id);
 	}
 	
 	public void addBlog(Blog newBlog){
 		database.addBlog(newBlog);
 		blogManager.setBlogList(database.getBlogs());
+	}
+	
+	//returns all blogs for blogFeed.jsp
+	public ArrayList<Blog> getAllBlogs(){
+		return blogManager.getAllBlogs();
+	}//getAllItemsDisplayed()
+	
+	public void newBlogComment(int blogID, String userEmail, String newComment, Boolean isAnon) { 
+		blogManager.newComment(blogID, userEmail, newComment, isAnon);
+		Action commentAction = new CommentAction(isAnon, userEmail, blogID, newComment);
+		database.addAction(commentAction);
 	}
 }

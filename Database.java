@@ -41,6 +41,7 @@ public class Database {
 		String user = "root";
 		String password = "root";
 		
+		
 		//parse the sql source file
 		try{
 			//connect to the sql database
@@ -901,10 +902,10 @@ public class Database {
 		int followingID = getUserID(following);
 		
 		try{
-			ps = conn.prepareStatement("DELETE FROM Following WHERE followingID=" + followingID );
+			ps = conn.prepareStatement("DELETE FROM Following WHERE following=" + followingID + " AND follower=" + followerID + ";");
 			ps.execute();
 		} catch(SQLException sqle){
-			System.out.println("sqle in addUser: " + sqle.getMessage());
+			System.out.println("sqle in unfollow: " + sqle.getMessage());
 		}
 	}//unfollow()
 	
@@ -1210,9 +1211,10 @@ public class Database {
 		int creatorID = getUserID(creator);
 		
 		try{
-			ps = conn.prepareStatement("INSERT INTO Blogs(creatorID, title, description, image, content, dateCreated)"
+			ps = conn.prepareStatement("INSERT INTO Blogs(creatorID, title, description, image, content, dateCreated) "
 					+ "VALUES(" + creatorID + ", '" + title + "', '" + description + "', '" + image + "', '" 
-					+ content + "', '" + dateCreated + ")");
+					+ content + "', '11/11/2017')");
+			
 			ps.execute();
 		} catch(SQLException sqle){
 			System.out.println("sqle in addBlog: " + sqle.getMessage());
@@ -1226,22 +1228,26 @@ public class Database {
 		ArrayList<Blog> blogs = new ArrayList<Blog>();
 		
 		try{			
-			ps = conn.prepareStatement("SELECT b.title, b.description, b.content, b.dateCreated, "
+			ps = conn.prepareStatement("SELECT b.blogID, b.title, b.description, b.content, b.dateCreated, "
 					+ "b.image, u.email "
 					+ "FROM Blogs b, Users u "
 					+ "WHERE b.creatorID = u.userID;");
 			rs = ps.executeQuery();
 			
 			while(rs.next()){
+				int blogID = rs.getInt("blogID");
 				String title = rs.getString("b.title");		//blog title
 				String description = rs.getString("b.description");	//blog description
 				String content = rs.getString("b.content");	//blog content
 				String dateCreated = rs.getString("b.dateCreated");	//blog description
 				String image = rs.getString("b.image");			//image url
 				String creator = rs.getString("u.email");	//blog description
+				ArrayList<CommentAction> comments = getComments(blogID);
+				
+				comments = getComments(blogID);
 				
 				//create the blog and add it to the list of blogs
-				Blog blog = new Blog(title, description, creator, image, content, dateCreated);
+				Blog blog = new Blog(blogID, title, description, creator, image, content, dateCreated, comments);
 				blogs.add(blog);
 			}
 		} catch(SQLException sqle){
