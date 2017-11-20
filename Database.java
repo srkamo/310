@@ -356,7 +356,7 @@ public class Database {
 				String title = rs.getString("e.title");		//entity title
 				int entityID = rs.getInt("e.entityID");			//entity ID
 				String description = rs.getString("e.description");	//entity description
-				ArrayList<String> tags = getTags(entityID);	//entity tags
+				ArrayList<String> tags = getEntityTags(entityID);	//entity tags
 				int rating = rs.getInt("e.rating");				
 				String image = rs.getString("e.image");			//image url
 				int numViews = rs.getInt("e.numViews");
@@ -373,9 +373,9 @@ public class Database {
 				entities.add(entity);
 			}
 		} catch(SQLException sqle){
-			System.out.println("sqle in getEntities: " + sqle.getMessage());
+			System.out.println("sqle in getEntityTags: " + sqle.getMessage());
 		} catch(ArithmeticException ae){
-			System.out.println("ae in getEntities: " + ae.getMessage());
+			System.out.println("ae in getEntityTags: " + ae.getMessage());
 		}
 		
 		return entities;
@@ -383,7 +383,7 @@ public class Database {
 	
 	
 	//returns a list of tags for the entity with ID given
-	private ArrayList<String> getTags(int id){
+	private ArrayList<String> getEntityTags(int id){
 		ArrayList<String> tags = new ArrayList<String>();
 		
 		//need new prepare statement and result set because this function will be called in
@@ -408,6 +408,38 @@ public class Database {
 			System.out.println("ae in getTags: " + ae.getMessage());
 		}
 		
+		return tags;
+	}//getTags()
+	
+	
+	//returns a list of tags for the entity with ID given
+	private ArrayList<String> getPollTags(int id){
+		System.out.println("getting poll tags");
+		ArrayList<String> tags = new ArrayList<String>();
+		
+		//need new prepare statement and result set because this function will be called in
+		//the middle of parsing through global result set. If it used the same set, this 
+		//function would overwrite the results from the last call to the database
+		PreparedStatement p = null;
+		ResultSet r = null;
+		
+		try{
+			p = conn.prepareStatement("SELECT title "
+					+ "FROM PollTags "
+					+ "WHERE pollID = '" + id + "';");
+			r = p.executeQuery();
+			
+			while(r.next()){
+				String tag = r.getString("title");		//tag title
+				tags.add(tag);
+			}
+		} catch(SQLException sqle){
+			System.out.println("sqle in getPollTags: " + sqle.getMessage());
+		} catch(ArithmeticException ae){
+			System.out.println("ae in getPollTags: " + ae.getMessage());
+		}
+		
+		System.out.println("num poll tags: " + tags.size());
 		return tags;
 	}//getTags()
 	
@@ -523,7 +555,7 @@ public class Database {
 				String title = rs.getString("p.title");		//poll title
 				int pollID = rs.getInt("p.pollID");			//poll ID
 				String image = rs.getString("p.image");			//image url
-				ArrayList<String> tags = getTags(pollID);	//poll tags
+				ArrayList<String> tags = getPollTags(pollID);	//poll tags
 				ArrayList<String> options = getOptions(pollID);	//poll options	
 				HashMap<String, Integer> numVotes = getPollVotes(pollID);
 				int numViews = rs.getInt("p.numViews");
@@ -540,9 +572,9 @@ public class Database {
 				polls.add(poll);
 			}
 		} catch(SQLException sqle){
-			System.out.println("sqle in getEntities: " + sqle.getMessage());
+			System.out.println("sqle in getPolls: " + sqle.getMessage());
 		} catch(ArithmeticException ae){
-			System.out.println("ae in getEntities: " + ae.getMessage());
+			System.out.println("ae in getPolls: " + ae.getMessage());
 		}
 		
 		return polls;
