@@ -16,6 +16,7 @@ public class KingManager {
 	private Database database;
 	private EntityManager entityManager;
 	private PollManager pollManager;
+	private BlogManager blogManager;
 	private User curUser;
 	private ArrayList<Object> allItemsDisplayed;
 	
@@ -24,6 +25,8 @@ public class KingManager {
 		database  = new Database();
 		entityManager = new EntityManager();
 		pollManager = new PollManager();
+		blogManager = new BlogManager();
+		blogManager.setBlogList(database.getBlogs()); 
 		ids = database.getNumThings();
 		curUser = null;
 		allItemsDisplayed = new ArrayList<Object>();
@@ -39,17 +42,28 @@ public class KingManager {
 	}
 	
 	
-	public ArrayList<Object> search(String search){
-		System.out.println("wya " + search);
+public ArrayList<Object> search(String search, String filter){
+		
+		
 		ArrayList<Entity> entities = database.searchForEntities(search);
-		System.out.println("entities size: " + entities.size());
 		entityManager.setEntityList(entities);
+		
 		ArrayList<Poll> polls = database.searchForPolls(search);
 		pollManager.setPollList(polls);
 		
 		ArrayList<Object> all = new ArrayList<Object>();
+		
+		if(filter.equals("entities"))
+		all.addAll(entities);
+		
+		if(filter.equals("polls"))
+		all.addAll(polls);
+		
+		if(filter.equals("everything"))
+		{
 		all.addAll(entities);
 		all.addAll(polls);
+		}
 		
 		Collections.sort(all, new Comparator<Object>() {
 			public int compare(Object o1, Object o2){
@@ -72,7 +86,6 @@ public class KingManager {
 			}
 		});
 		
-		System.out.println("all size: " + all.size());
 		allItemsDisplayed = all;
 		return all;
 	}//search()
@@ -84,7 +97,34 @@ public class KingManager {
 	}//getAllItemsDisplayed()
 	
 	
+	//get the list of actions performed by the current user
+	public ArrayList<Action> getCurrUserActions(){
+		ArrayList<Action> userActions = database.getUserActions(curUser.getEmail());
+		return userActions;
+	}
 	
+	//get the list of actions performed by the user passed
+	public ArrayList<Action> getUserActions(String email){
+		ArrayList<Action> userActions = database.getUserActions(email);
+		return userActions;
+	}
+	
+	
+	//retruns null if user has not rated or voted
+	//otherwise returns thw action associated with the rating or voting
+	public Action userRatedOrVoted(int subjectID, String email){
+		return database.userRatedOrVoted(subjectID, email);
+	}//userRatedOrVoted()
+	
+	
+	//returns the number of items to use as an id
+	public int getIds(){
+		return ids;
+	}//getIds()
+	
+	public int getCurrId(){
+		return ids;
+	}
 	
 	
 /*----------------Database------------------------------- */
@@ -95,33 +135,106 @@ public class KingManager {
 	public void addUser(User newUser){
 		database.addUser(newUser);
 	}	
+	
+	public void editComment(int subjectID, String oldComment, String newComment){
+		database.editCommment(subjectID, oldComment, newComment);
+		pollManager.setPollList(database.getPolls());
+		entityManager.setEntityList(database.getEntities());
+	}
+	
+	public void editRating(int subjectID, String email){
+		database.editRating(subjectID, email);
+		entityManager.setEntityList(database.getEntities());
+	}
+	
+	public void editVote(int subjectID, String email, String newVote){
+		database.editVote(subjectID, email, newVote);
+		pollManager.setPollList(database.getPolls());
+	}
+	
+	public void deletePoll(int pollID){
+		database.deletePoll(pollID);
+		pollManager.setPollList(database.getPolls());
+	}
+	
+	public void deleteEntity(int entityID){
+		database.deleteEntity(entityID);
+		entityManager.setEntityList(database.getEntities());
+	}
+	
+	public void followUser(String userToFollow) {
+		User toFollow = this.getUser(userToFollow); 
+		database.newFollower(curUser.getEmail(), userToFollow);
+		curUser = database.getUser(curUser.getEmail());
+	}
+	
+	public Boolean alreadyFollows(String userToFollow) {
+		User toFollow = this.getUser(userToFollow); 
+		Boolean doesFollow = false; 
+		
+		if (curUser.getFollowing().contains(userToFollow)) {
+			doesFollow = true; 
+		}
+		
+		return doesFollow;
+	}
+	
+	public void unfollowUser(String userToUnfollow) {
+		User toUnfollow = this.getUser(userToUnfollow); 
+		database.unfollow(curUser.getEmail(), userToUnfollow);
+		curUser = database.getUser(curUser.getEmail());
+	}	
 
 /*----------------EntityManager------------------------------- */
 	public Entity getEntity(int entityID){
 		return entityManager.getEntity(entityID);
 	}
 	
+	public Entity getEntityByTitle (String entityTitle){
+		return entityManager.getEntityByTitle(entityTitle);
+	}
+	
 	public void addEntity(Entity newEntity){
 		database.addEntity(newEntity);
-		entityManager.addEntity(newEntity);
+		allItemsDisplayed.add(newEntity);
+		//entityManager.addEntity(newEntity);
+		entityManager.setEntityList(database.getEntities());
 		ids++;
 	}
 	
 	public void newRating(int entityID, Boolean upVote, String userEmail, Boolean isAnon) {
 		entityManager.newRating(entityID, upVote);
+		Action ratingAction = new RatingAction(isAnon, userEmail, entityID, upVote);
 		Action action = new Action(isAnon, userEmail, entityID);
-		database.addAction(action);
+		
+		//add something here to update database with new rating value
+		if(upVote){
+			database.upVoteEntity(entityID);
+		}
+		else{
+			database.downVoteEntity(entityID);
+		}
+		
+		database.addAction(ratingAction);
 	}
 	
 	public void newEntityComment(int entityID, String userEmail, String newComment, Boolean isAnon) { 
-		entityManager.newComment(entityID, userEmail, newComment);
+		entityManager.newComment(entityID, userEmail, newComment, isAnon);
+		Action commentAction = new CommentAction(isAnon, userEmail, entityID, newComment);
 		Action action = new Action(isAnon, userEmail, entityID);
-		database.addAction(action);
+		database.addAction(commentAction);
 	}
 	
 	public void addEntityView(int entityID) {
 		entityManager.addView(entityID);
 		database.addNumView(entityID, "Entity");
+	}
+	
+	public Boolean isEntityExpired(int id){
+		Entity currEntity = this.getEntity(id);
+		Calendar curCal = currEntity.getTimeEnd();
+		Calendar now = Calendar.getInstance();
+		return curCal.before(now);
 	}
 
 /*----------------PollManager------------------------------- */
@@ -129,9 +242,15 @@ public class KingManager {
 		return pollManager.getPoll(pollID);
 	}
 	
+	public Poll getPollByTitle (String pollTitle){
+		return pollManager.getPollByTitle(pollTitle);
+	}
+	
 	public void addPoll(Poll newPoll){
 		database.addPoll(newPoll);
-		pollManager.addPoll(newPoll);
+		allItemsDisplayed.add(newPoll);
+		//pollManager.addPoll(newPoll);
+		pollManager.setPollList(database.getPolls());
 		ids++;
 	}
 	
@@ -142,39 +261,50 @@ public class KingManager {
 	
 	public void newVote(int pollID, String choice, Boolean isAnon, String userEmail) {
 		pollManager.newVote(pollID, choice);
+		Action pollAction = new PollAction(isAnon, userEmail, pollID, choice);
 		Action action = new Action(isAnon, userEmail, pollID);
-		database.addAction(action);
+		database.addAction(pollAction);
 	}
 	
 	public void newPollComment(int pollID, String userEmail, String newComment, Boolean isAnon) { 
-		pollManager.newComment(pollID, userEmail, newComment);
+		pollManager.newComment(pollID, userEmail, newComment, isAnon);
+		Action commentAction = new CommentAction(isAnon, userEmail, pollID, newComment);
 		Action action = new Action(isAnon, userEmail, pollID);
-		database.addAction(action);
+		database.addAction(commentAction);
 	}
 	
 	
-	//returns the number of items to use as an id
-		public int getIds(){
-			return ids;
-		}//getIds()
-		
-		public int getCurrId(){
-			return ids;
-		}
-		
-		
-		public Boolean isPollExpired(int id){
-			Poll currPoll = this.getPoll(id);
-			Calendar curCal = currPoll.getTimeEnd();
-			Calendar now = Calendar.getInstance();
-			return curCal.before(now);
-		}
-		
-		public Boolean isEntityExpired(int id){
-			Entity currEntity = this.getEntity(id);
-			Calendar curCal = currEntity.getTimeEnd();
-			Calendar now = Calendar.getInstance();
-			return curCal.before(now);
-		}
+	public Boolean isPollExpired(int id){
+		Poll currPoll = this.getPoll(id);
+		Calendar curCal = currPoll.getTimeEnd();
+		Calendar now = Calendar.getInstance();
+		return curCal.before(now);
+	}
 	
+	
+	
+	/*----------------BlogManager------------------------------- */
+	public Blog getBlog(int id){
+		return blogManager.getBlog(id);
+	}
+	
+	public void resetBlogs(){
+		blogManager.setBlogList(database.getBlogs()); 
+	}
+	
+	public void addBlog(Blog newBlog){
+		database.addBlog(newBlog);
+		blogManager.setBlogList(database.getBlogs());
+	}
+	
+	//returns all blogs for blogFeed.jsp
+	public ArrayList<Blog> getAllBlogs(){
+		return blogManager.getAllBlogs();
+	}//getAllItemsDisplayed()
+	
+	public void newBlogComment(int blogID, String userEmail, String newComment, Boolean isAnon) { 
+		blogManager.newComment(blogID, userEmail, newComment, isAnon);
+		Action commentAction = new CommentAction(isAnon, userEmail, blogID, newComment);
+		database.addAction(commentAction);
+	}
 }

@@ -18,34 +18,9 @@
 			idStr=idStr.substring(0,idStr.length()-1);
 			int id = Integer.parseInt(idStr);
 			
-			// edit entity comment
-				String editEntity = request.getParameter("editEntityComment");
-				if(editEntity != null && editEntity.equals("true")){
-					String comment = request.getParameter("commentTextbox");
-					String oldComment = request.getParameter("oldComment");
-					
-					km.editComment(id, oldComment, comment);
-					session.setAttribute("kingManager", km);
-					
-					response.sendRedirect("../entityPage.jsp?subjectID="+id);
-				}
 			
-			
-			// edit poll comment
-				String editPoll = request.getParameter("editPollComment");
-				if(editPoll != null && editPoll.equals("true")){
-					String comment = request.getParameter("commentTextbox");
-					String oldComment = request.getParameter("oldComment");
-					
-					km.editComment(id, oldComment, comment);
-					session.setAttribute("kingManager", km);
-					
-					response.sendRedirect("../pollPage.jsp?subjectID="+id);
-				}
-			
-		
 			//if user is not logged in
-			else if(km.getCurUser() == null){
+			if(km.getCurUser() == null){
 				String errorMessage = "You must be logged in to comment on this item.";
 				session.setAttribute("errorMessageComment", errorMessage);
 				
@@ -55,117 +30,120 @@
 				else{
 					response.sendRedirect("../pollPage.jsp?subjectID="+id);
 				}
-			}//if user not logged in 
+			}
 			
 			//user is logged in
 			else{
-				//if comment on entity
+				//if subject type is entity
 				if(subjectType.equals("Entity")){
+					String editEntity = request.getParameter("editEntityComment");
 					
-					//if entity is expired
+					//if entity expired
 					if(km.isEntityExpired(id)){
 						String errorMessage = "This entity is expired";
 						session.setAttribute("errorMessageComment", errorMessage);
-						response.sendRedirect("../entityPage.jsp?subjectID="+id);
-					}
-					//if poll expired
+					}//expired
 					
-				}//if comment on entity
-				//else comment on poll
-				else if(subjectType.equals("Poll")){
+					//if edit comment
+					else if(editEntity != null && editEntity.equals("true")){
+						String comment = request.getParameter("commentTextbox");
+						String oldComment = request.getParameter("oldComment");
+						
+						km.editComment(id, oldComment, comment);
+						session.setAttribute("kingManager", km);
+					}//edit comment
 					
-					//if poll expired
-					if(km.isPollExpired(id)){
-						String errorMessage = "This poll is expired";
-						session.setAttribute("errorMessageComment", errorMessage);
-						response.sendRedirect("../pollPage.jsp?subjectID="+id);
-					}//if poll expired
+					//not edit comment - just comment
+					else{
+						session.setAttribute("errorMessageComment", "");
+						String comment = request.getParameter("commentTextbox");
+						
+						User currUser = km.getCurUser();
+						String userEmail = currUser.getEmail();
+						
+						Boolean isAnon = true;
+						String checkbox = request.getParameter("checkbox");
+						if(checkbox == null)
+							isAnon = false;
+						
+						km.newEntityComment(id, userEmail, comment, isAnon);
+						session.setAttribute("kingManager", km);
+					}//comment
 					
-				}//else comment on poll
-				else if(subjectType.equals("Blog")){
-					if(km.isPollExpired(id)){
-						String errorMessage = "This poll is expired";
-						session.setAttribute("errorMessageComment", errorMessage);
-						response.sendRedirect("../blogPage.jsp?subjectID="+id);
-					}//if poll expired
-					
-				}
-				
-				
-				
-				session.setAttribute("errorMessageComment", "");
-				String comment = request.getParameter("commentTextbox");
-				
-				User currUser = km.getCurUser();
-				String userEmail = currUser.getEmail();
-				
-				Boolean isAnon = true;
-				String checkbox = request.getParameter("checkbox");
-				if(checkbox == null)
-					isAnon = false;
-				
-				if(subjectType.equals("Entity")){
-					km.newEntityComment(id, userEmail, comment, isAnon);
-					session.setAttribute("kingManager", km);
-					response.sendRedirect("../entityPage.jsp?subjectID=" + id);
-				}
-				else if(subjectType.equals("Poll")){
-					km.newPollComment(id, userEmail, comment, isAnon);
-					session.setAttribute("kingManager", km);
-					response.sendRedirect("../pollPage.jsp?subjectID=" + id);
-				}
-				else if(subjectType.equals("Blog")){
-					//km.newBlogComment(id, userEmail, comment, isAnon);
-					session.setAttribute("kingManager", km);
-					response.sendRedirect("../BlogPage.jsp?subjectID=" + id);
-				}
-				
-			}//else user logged in
-			
-			
-			//all this stuff happens only if no error exists
-			
-			
-			
-			
-			
-/* 			//error checking if the poll is expired
-			else if(km.isEntityExpired(id)){
-				String errorMessage = "This poll is expired";
-				session.setAttribute("errorMessageComment", errorMessage);
-				
-				if(subjectType.equals("Entity")){
 					response.sendRedirect("../entityPage.jsp?subjectID="+id);
-				}
-				else{
+				}//subject type is entity
+				
+				//if subject type is poll
+				else if(subjectType.equals("Poll")){
+					String editPoll = request.getParameter("editPollComment");
+					
+					//if poll expired
+					if(km.isPollExpired(id)){
+						String errorMessage = "This poll is expired";
+						session.setAttribute("errorMessageComment", errorMessage);
+					}//if poll expired
+					
+					//if edit comment
+					else if(editPoll != null && editPoll.equals("true")){
+						String comment = request.getParameter("commentTextbox");
+						String oldComment = request.getParameter("oldComment");
+						
+						km.editComment(id, oldComment, comment);
+						session.setAttribute("kingManager", km);
+					}//if edit poll comment
+					
+					//not edit comment - just commment
+					else{
+						session.setAttribute("errorMessageComment", "");
+						String comment = request.getParameter("commentTextbox");
+						
+						User currUser = km.getCurUser();
+						String userEmail = currUser.getEmail();
+						
+						Boolean isAnon = true;
+						String checkbox = request.getParameter("checkbox");
+						if(checkbox == null)
+							isAnon = false;
+						
+						km.newPollComment(id, userEmail, comment, isAnon);
+						session.setAttribute("kingManager", km);
+					}//comment on poll
+					
 					response.sendRedirect("../pollPage.jsp?subjectID="+id);
-				}
-			} */
-			//user is logged in
-/* 			else{
-				session.setAttribute("errorMessageComment", "");
-				String comment = request.getParameter("commentTextbox");
+				}//else poll
 				
-				User currUser = km.getCurUser();
-				String userEmail = currUser.getEmail();
-				
-				Boolean isAnon = true;
-				
-				String checkbox = request.getParameter("checkbox");
-				if(checkbox == null)
-					isAnon = false;
-				
-				if(subjectType.equals("Entity")){
-					km.newEntityComment(id, userEmail, comment, isAnon);
-					session.setAttribute("kingManager", km);
-					response.sendRedirect("../entityPage.jsp?subjectID=" + id);
-				}
+				//else subject type is blog
 				else{
-					km.newPollComment(id, userEmail, comment, isAnon);
-					session.setAttribute("kingManager", km);
-					response.sendRedirect("../pollPage.jsp?subjectID=" + id);
-				}
-			} */
+					String editBlog = request.getParameter("editBlogComment");
+					session.setAttribute("errorMessageComment", "");
+					String comment = request.getParameter("commentTextbox");
+					
+					if(editBlog != null && editBlog.equals("true")){
+						
+						String oldComment = request.getParameter("oldComment");
+						
+						km.editComment(id, oldComment, comment);
+						km.resetBlogs();
+						session.setAttribute("kingManager", km);
+					}
+					else{
+						User currUser = km.getCurUser();
+						String userEmail = currUser.getEmail();
+						
+						Boolean isAnon = true;
+						String checkbox = request.getParameter("checkbox");
+						if(checkbox == null)
+							isAnon = false;
+						
+						km.newBlogComment(id, userEmail, comment, isAnon);
+						session.setAttribute("kingManager", km);
+					}
+					
+					
+					response.sendRedirect("../blogPage.jsp?subjectID="+id);
+				}//else blog
+				
+			}//else logged in
 				
 	
 		%>

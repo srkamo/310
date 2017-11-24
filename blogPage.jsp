@@ -11,7 +11,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Tales of a Food Loving Engineer</title>
+        <title>Blog Page</title>
         <meta name="description" content="GARO is a real-estate template">
         <meta name="author" content="Kimarotec">
         <meta name="keyword" content="html5, css, bootstrap, property, real-estate theme , bootstrap template">
@@ -43,7 +43,8 @@
     <%
  		KingManager km  = (KingManager) session.getAttribute("kingManager");
 	
-		int id = Integer.parseInt(request.getParameter("id")); 
+    	String subjectID = request.getParameter("subjectID"); 
+		int id = Integer.parseInt(subjectID);
 		Blog currBlog = (Blog) km.getBlog(id);
 		String description = currBlog.getDescription(); 
 		String creator = currBlog.getCreator(); 
@@ -52,7 +53,6 @@
 		String title = currBlog.getTitle();
 		
 		ArrayList<CommentAction> Comments = currBlog.getComments();
-
 	%>
     
     <body>
@@ -129,7 +129,7 @@
                 <div id="form-div">
 					<form action="servlets/comment.jsp">
 						<center><textarea name="commentTextbox" style="width:600px"></textarea></center>
-						<input type="hidden" name="id" value=<%=id %>/>
+						<input type="hidden" name="id" value=<%=id%>/>
 						<input type="hidden" name="subjectType" value="Blog"/>
 						<center><input type="submit" value="Add Comment" style="width:600px"></center>
 						<center>Check this box if you would like to 
@@ -139,34 +139,34 @@
 						<h4><Center>Comments: </Center></h4>
 						
 						<%
-						for(int i = 0; i<Comments.size(); i++){
+						for(int i = 0; i<Comments.size(); i++)
+						{
 							// edit comment
 							if(km.getCurUser() != null){
 								if(km.getCurUser().getEmail().equalsIgnoreCase( Comments.get(i).getUser())){
 									%>
-										<p id="comment"> <a href=<%="\" editCommentPoll.jsp?subjectID=" + Comments.get(i).getSubjectID()  + "&curComment=" + Comments.get(i).getContent() + "\""%> >Edit</a>
+										<p id="comment"> <a href=<%="\" editCommentBlog.jsp?subjectID=" + Comments.get(i).getSubjectID()  + "&curComment=" + Comments.get(i).getContent() + "\""%> >Edit</a>
 									<% 
 								}
 				
 							}
 							
-							
-							//comment not anon
+							//comment is not anonymous
 							if(!Comments.get(i).getIsAnon()){
 								%>
-								<p id="comment"><a href=<%="\" publicUserPage.jsp?email=" + Comments.get(i).getUser() + "\""%> ><%=Comments.get(i).getUser() %></a>: <strong><%= Comments.get(i).getContent() %></strong></p>
+								<a href=<%="\" publicUserPage.jsp?email=" + Comments.get(i).getUser() + "\""%> ><%=Comments.get(i).getUser() %></a>: <strong><%= Comments.get(i).getContent() %></strong></p>
 								
 								<%
 							}
-							//comment anonymous
+							//comment is anonymous   <p id="comment">
 							else{
 								%>
-								<p id="comment">Anonymous: <strong><%= Comments.get(i).getContent() %></strong></p>
+								Anonymous: <strong><%= Comments.get(i).getContent() %></strong></p>
 								
 								<%
 							}
 						}
-						%>                          
+						%>                        
                         </section>
                     </div>                                 
                 </div>
